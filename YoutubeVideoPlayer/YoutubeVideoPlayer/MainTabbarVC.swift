@@ -19,13 +19,13 @@ class MainTabbarVC: UITabBarController {
     
     lazy var homeController = handleCreateTab(with: HomeVC(), title: "Home", selectedImage: HOME_SELECTED_IMAGE, image: HOME_UNSELECTED_IMAGE)
     
-    lazy var shortsController = handleCreateTab(with: HomeVC(), title: "Shorts", selectedImage: SHORTS_SELECTED_IMAGE, image: SHORTS_IMAGE)
+    lazy var shortsController = handleCreateTab(with: UIViewController(), title: "Shorts", selectedImage: SHORTS_SELECTED_IMAGE, image: SHORTS_IMAGE)
 
-    lazy var createController = handleCreateTab(with: HomeVC(), title: nil, selectedImage: CREATE_POST_IMAGE, image: CREATE_POST_IMAGE)
+    lazy var createController = handleCreateTab(with: UIViewController(), title: nil, selectedImage: CREATE_POST_IMAGE, image: CREATE_POST_IMAGE)
     
-    lazy var subsController = handleCreateTab(with: HomeVC(), title: "Subscriptions", selectedImage: SUBSCRIPTION_SELECTED_IMAGE, image: SUBSCRIPTION_UNSELECTED_IMAGE)
+    lazy var subsController = handleCreateTab(with: UIViewController(), title: "Subscriptions", selectedImage: SUBSCRIPTION_SELECTED_IMAGE, image: SUBSCRIPTION_UNSELECTED_IMAGE)
     
-    lazy var libraryController = handleCreateTab(with: HomeVC(), title: "Library", selectedImage: LIBRARY_SELECTED_IMAGE, image: LIBRARY_UNSELECTED_IMAGE)
+    lazy var libraryController = handleCreateTab(with: UIViewController(), title: "Library", selectedImage: LIBRARY_SELECTED_IMAGE, image: LIBRARY_UNSELECTED_IMAGE)
     
     
 
