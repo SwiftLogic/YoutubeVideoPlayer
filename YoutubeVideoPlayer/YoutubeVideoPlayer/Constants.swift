@@ -109,86 +109,63 @@ let MINI_PLAYER_WIDTH: CGFloat = UIScreen.main.bounds.width / 3
 
 
 
-//extension UIViewController {
-//
-//
-//
-//    func handleSetUpNavBar() {
-//        handleHide_ShowNavLine(navController: navigationController, showLine: false)
-//
-//        let profileImageView: UIImageView = {
-//            let imageView = UIImageView()
-//            imageView.contentMode = .scaleAspectFill
-//            imageView.clipsToBounds = true
-//            imageView.image = UIImage(named: "image3")
-//            let height: CGFloat = 28
-//            imageView.constrainHeight(constant: height)
-//            imageView.constrainWidth(constant: height)
-//            imageView.layer.cornerRadius = height / 2
-//            imageView.isUserInteractionEnabled = true
-//            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleDidTapProfile))
-//            imageView.addGestureRecognizer(tapGesture)
-//            return imageView
-//        }()
-//
-//
-//         let youtubeImageView: UIImageView = {
-//            let imageView = UIImageView()
-//            imageView.contentMode = .scaleAspectFit
-//            imageView.backgroundColor = APP_BACKGROUND_COLOR
-//            imageView.clipsToBounds = true
-//            imageView.image = UIImage(named: "youtubelogo")
-//    //        imageView.constrainHeight(constant: 50)
-//            imageView.constrainWidth(constant: 130)
-//            return imageView
-//        }()
-//
-//
-//
-//        let broadcastitem = UIBarButtonItem(image: BROADCAST_IMAGE, style: .done, target: self, action: nil)
-//        let notificationitem = UIBarButtonItem(image: NOTIFICATION_IMAGE, style: .done, target: self, action: #selector(handleDidTapNotifications))
-//        let searchItem = UIBarButtonItem(image: SEARCH_IMAGE, style: .done, target: self, action: #selector(handleDidTapSearch))
-//
-//
-//
-//        let profileItem = UIBarButtonItem(customView: profileImageView)
-//
-//
-////        let logoItem = UIBarButtonItem(customView: youtubeImageView)
-//
-////        navigationItem.leftBarButtonItem = logoItem
-//        navigationItem.rightBarButtonItems = [profileItem, searchItem, notificationitem, broadcastitem]
-//
-//        guard let navBar = navigationController?.navigationBar else {return}
-//        navBar.addSubview(youtubeImageView)
-//        youtubeImageView.anchor(top: navBar.topAnchor, leading: navBar.leadingAnchor, bottom: navBar.bottomAnchor, trailing: nil, padding: .init(top: 0, left: 0, bottom: 0, right: 0))
-//
-//    }
-//
-//
-//
-//
-////    @objc fileprivate func handleDidTapNotifications() {
-////        let notificationsController = NotificationsVC()
-////        navigationController?.pushViewController(notificationsController, animated: true)
-////    }
-////
-////
-////    @objc fileprivate func handleDidTapProfile() {
-////        let profileVCInfoController = ProfileInfoVC()
-////        let navController = CustomNavController(rootViewController: profileVCInfoController)
-////        navController.modalPresentationStyle = .fullScreen
-////        present(navController, animated: true)
-////    }
-////
-////
-////    @objc fileprivate func handleDidTapSearch() {
-////        let searchVC = SearchVC()
-////        let navController = CustomNavController(rootViewController: searchVC)
-////        navController.modalPresentationStyle = .fullScreen
-////        present(navController, animated: false)
-////    }
-//
-//
-//
-//}
+extension UIViewController {
+
+
+    func handleSetUpNavBar() {
+        handleHide_ShowNavLine(navController: navigationController, showLine: false)
+
+        let profileImageView: UIImageView = {
+            let imageView = UIImageView()
+            imageView.contentMode = .scaleAspectFill
+            imageView.clipsToBounds = true
+            imageView.image = UIImage(named: "image7")
+            let height: CGFloat = 28
+            imageView.constrainHeight(constant: height)
+            imageView.constrainWidth(constant: height)
+            imageView.layer.cornerRadius = height / 2
+            imageView.isUserInteractionEnabled = true
+            let tapGesture = UITapGestureRecognizer(target: self, action: nil)
+            imageView.addGestureRecognizer(tapGesture)
+            return imageView
+        }()
+
+
+         let youtubeImageView: UIImageView = {
+            let imageView = UIImageView()
+            imageView.contentMode = .scaleAspectFit
+            imageView.backgroundColor = APP_BACKGROUND_COLOR
+            imageView.clipsToBounds = true
+            imageView.image = UIImage(named: "youtubelogo")
+    //        imageView.constrainHeight(constant: 50)
+            imageView.constrainWidth(constant: 130)
+            return imageView
+        }()
+
+
+
+        let broadcastitem = UIBarButtonItem(image: BROADCAST_IMAGE, style: .done, target: self, action: nil)
+        let notificationitem = UIBarButtonItem(image: NOTIFICATION_IMAGE, style: .done, target: self, action: nil)
+        let searchItem = UIBarButtonItem(image: SEARCH_IMAGE, style: .done, target: self, action: nil)
+
+
+
+        let profileItem = UIBarButtonItem(customView: profileImageView)
+
+
+        navigationItem.rightBarButtonItems = [profileItem, searchItem, notificationitem, broadcastitem]
+
+        guard let navBar = navigationController?.navigationBar else {return}
+        navBar.addSubview(youtubeImageView)
+        youtubeImageView.anchor(top: navBar.topAnchor, leading: navBar.leadingAnchor, bottom: navBar.bottomAnchor, trailing: nil, padding: .init(top: 0, left: 0, bottom: 0, right: 0))
+
+    }
+
+
+
+
+   
+
+
+
+}

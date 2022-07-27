@@ -18,28 +18,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.windowScene = windowScene
         window?.rootViewController = MainTabbarVC()
         window?.makeKeyAndVisible()
-        handleSetUpNav_TabBarUI()
     }
     
     
-    func handleSetUpNav_TabBarUI() {
-        // setup navBar.....
-        UINavigationBar.appearance().barTintColor = .red
-        UINavigationBar.appearance().tintColor = .red
-        UINavigationBar.appearance().titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
-        UINavigationBar.appearance().isTranslucent = false
-        
-        //setup tabbar
-        UITabBar.appearance().tintColor = .red
-        UITabBar.appearance().barTintColor = .red
-        UITabBarItem.appearance().setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white], for: .normal)
-           UITabBarItem.appearance().setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white], for: .selected)
-
-//        handleFix_iOS_15_NavBarBug()
-//        handleFix_iOS_15_TabBarBug()
-//        handleFix_iOS_15_TableViewBug()
-
-    }
 
     func sceneDidDisconnect(_ scene: UIScene) {
         // Called as the scene is being released by the system.
