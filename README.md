@@ -1,2 +1,2 @@
 # YoutubeVideoPlayer
-A clone of Youtube ios app's video player using programmatic UIKit
+A clone of Youtube ios app video player using programmatic UI and UIKit
