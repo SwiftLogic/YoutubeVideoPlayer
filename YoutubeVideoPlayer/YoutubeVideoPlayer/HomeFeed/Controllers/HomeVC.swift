@@ -37,7 +37,7 @@ class HomeVC: UICollectionViewController {
     //MARK: - Methods
     fileprivate func setUpCollectionView() {
         collectionView.register(HomeFeedCell.self, forCellWithReuseIdentifier: HomeFeedCell.cellReuseIdentifier)
-        collectionView.register(PreviewShortsCollectionViewCell.self, forCellWithReuseIdentifier: PreviewShortsCollectionViewCell.cellReuseIdentifier)
+        collectionView.register(ShortsContainerViewCell.self, forCellWithReuseIdentifier: ShortsContainerViewCell.cellReuseIdentifier)
         collectionView.backgroundColor = APP_BACKGROUND_COLOR
         collectionView.contentInset = .init(top: 8, left: 0, bottom: 0, right: 0)
         posts = HomeFeedDataModel.getMockData()
@@ -58,14 +58,15 @@ extension HomeVC: UICollectionViewDelegateFlowLayout {
         
         case .normalYoutubeVideos:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeFeedCell.cellReuseIdentifier, for: indexPath) as! HomeFeedCell
-            cell.homeFeedDataModel = posts[indexPath.item]
+            let post = posts[indexPath.item]
+            cell.configure(with: post)
             let newHeight = computeImageViewHeight(withImage: posts[indexPath.item].videoThumbnailImageUrl)
             cell.thumbnailHeightConstraint.constant = newHeight
             cell.layoutIfNeeded()
             return cell
             
         case .shortsYoutubeVideos:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PreviewShortsCollectionViewCell.cellReuseIdentifier, for: indexPath) as! PreviewShortsCollectionViewCell
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ShortsContainerViewCell.cellReuseIdentifier, for: indexPath) as! ShortsContainerViewCell
             return cell
             
         }

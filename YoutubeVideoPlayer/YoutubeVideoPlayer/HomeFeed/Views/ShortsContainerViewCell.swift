@@ -1,12 +1,12 @@
 //
-//  PreviewShortsCollectionViewCell.swift
+//  ShortsContainerViewCell.swift
 //  YoutubeVideoPlayer
 //
 //  Created by Osaretin Uyigue on 7/27/22.
 //
 
 import UIKit
-class PreviewShortsCollectionViewCell: UICollectionViewCell {
+class ShortsContainerViewCell: UICollectionViewCell {
     
     //MARK: - Init
     override init(frame: CGRect) {
@@ -20,9 +20,9 @@ class PreviewShortsCollectionViewCell: UICollectionViewCell {
     
     
     //MARK: - Properties
-    static let cellReuseIdentifier = String(describing: PreviewShortsCollectionViewCell.self)
+    static let cellReuseIdentifier = String(describing: ShortsContainerViewCell.self)
 
-    let imageNames = (2...13).map{"image\($0)"}.shuffled()
+   fileprivate let imageNames = (2...13).map{"image\($0)"}.shuffled()
 
     fileprivate let shortsTextLabel: UILabel = {
         let label = UILabel()
@@ -79,14 +79,10 @@ class PreviewShortsCollectionViewCell: UICollectionViewCell {
     //MARK: - Handlers
     
     fileprivate func setUpViews() {
-//        addSubview(topLineSeperator)
         addSubview(shortsLogoImageView)
         addSubview(shortsTextLabel)
         addSubview(betaTextLabel)
         addSubview(collectionView)
-//        addSubview(bottomLineSeperator)
-
-//        topLineSeperator.anchor(top: topAnchor, leading: leadingAnchor, bottom: nil, trailing: trailingAnchor, size: .init(width: 0, height: 7))
 
         shortsLogoImageView.anchor(top: topAnchor, leading: leadingAnchor, bottom: nil, trailing: nil, padding: .init(top: 10, left: 15, bottom: 0, right: 0), size: .init(width: 30, height: 30))
         
@@ -101,14 +97,11 @@ class PreviewShortsCollectionViewCell: UICollectionViewCell {
         
         collectionView.contentInset = .init(top: 0, left: HORIZONTAL_PADDING, bottom: 0, right: HORIZONTAL_PADDING)
 
-//        bottomLineSeperator.anchor(top: nil, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, size: .init(width: 0, height: 7))
-
     }
     
     
     
     
-    //MARK: - Code Was Created by SamiSays11. Copyright © 2019 SamiSays11 All rights reserved.
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -118,11 +111,12 @@ class PreviewShortsCollectionViewCell: UICollectionViewCell {
 
 
 //MARK: - CollectionView Delegate
-extension PreviewShortsCollectionViewCell: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+extension ShortsContainerViewCell: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PreviewShortsCell.cellReuseIdentifier, for: indexPath) as! PreviewShortsCell
-        cell.imageName = imageNames[indexPath.item]
+        let imageName = imageNames[indexPath.item]
+        cell.configure(with: imageName)
         return cell
     }
     

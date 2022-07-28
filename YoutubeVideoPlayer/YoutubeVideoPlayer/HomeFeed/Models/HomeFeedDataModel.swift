@@ -99,7 +99,48 @@ struct Channel {
 }
 
 
+
 enum HomeFeedDataType {
     case normalYoutubeVideos
     case shortsYoutubeVideos
+}
+
+
+//MARK: - FIND A WAY TO DETERMINE DATA TYPE IS YOUTUBE SHORTS WITHOUT HAVING TO INITIALIZE: channel:  videoThumbnailImageUrl: videoTitle:  videoDuration:  creationDate:
+
+
+struct YouTubeVideo {
+    let channel: Channel
+    let videoThumbnailImageUrl: String
+    let videoTitle: String
+    let videoDuration: String
+    let creationDate: String
+}
+
+
+
+struct HomeContentViewModel {
+    let youtubeVideo: YouTubeVideo?
+}
+
+
+struct ContentTableViewCellViewModel {
+    let image: UIImage?
+    let title: String?
+
+    enum CellContent {
+        case image(UIImage?)
+        case title(String)
+    }
+    
+    init(content: CellContent) {
+        switch content {
+        case let .image(image):
+            self.image = image
+            self.title = nil
+        case let .title(title):
+            self.title = title
+            self.image = nil
+        }
+    }
 }

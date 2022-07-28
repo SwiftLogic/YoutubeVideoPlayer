@@ -12,8 +12,6 @@ class PreviewShortsCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setUpViews()
-        clipsToBounds = true
-        layer.cornerRadius = 3
     }
     
     
@@ -22,13 +20,6 @@ class PreviewShortsCell: UICollectionViewCell {
     //MARK: - Properties
     static let cellReuseIdentifier = String(describing: PreviewShortsCell.self)
 
-    var imageName: String! {
-        didSet {
-            thumbnailImageView.image = UIImage(named: imageName)
-        }
-    }
-    
-    
     fileprivate let thumbnailImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.clipsToBounds = true
@@ -38,14 +29,12 @@ class PreviewShortsCell: UICollectionViewCell {
     }()
     
     
-    
     fileprivate let videoTitleLabel: UILabel = {
         let label = UILabel()
         label.text = "Our New Rifles & Eating Popeye's New Chicken Sandwich"
         label.textColor = .white
         label.numberOfLines = 3
         label.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
-
         return label
     }()
     
@@ -59,9 +48,12 @@ class PreviewShortsCell: UICollectionViewCell {
     
     
     
-    //MARK: - Handlers
-    
+    //MARK: - Methods
     fileprivate func setUpViews() {
+        
+        clipsToBounds = true
+        layer.cornerRadius = 3
+        
         addSubview(thumbnailImageView)
         thumbnailImageView.fillSuperview()
         
@@ -72,10 +64,15 @@ class PreviewShortsCell: UICollectionViewCell {
         viewsLabel.anchor(top: nil, leading: leadingAnchor, bottom: bottomAnchor, trailing: nil, padding: .init(top: 0, left: 10, bottom: 10, right: 0))
         
         videoTitleLabel.anchor(top: nil, leading: viewsLabel.leadingAnchor, bottom: viewsLabel.topAnchor, trailing: trailingAnchor, padding: .init(top: 0, left: 0, bottom: 5, right: 5))
-
         
     }
     
+    
+    
+    // data binding
+    func configure(with imageName: String) {
+        thumbnailImageView.image = UIImage(named: imageName)
+    }
     
     
     

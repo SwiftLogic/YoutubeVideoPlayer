@@ -21,27 +21,10 @@ class HomeFeedCell: UICollectionViewCell {
     
     //MARK: - Properties
     static let cellReuseIdentifier = String(describing: HomeFeedCell.self)
-    
-    var homeFeedDataModel: HomeFeedDataModel! {
-        didSet {
-            thumbnailImageView.image = UIImage(named: homeFeedDataModel.videoThumbnailImageUrl)
-            channelImageView.image = UIImage(named: homeFeedDataModel.channel.channelImageUrl)
-            videoTitleLabel.text = homeFeedDataModel.videoTitle
-            videoDurationLabel.text = homeFeedDataModel.videoDuration
-            let creationDate = homeFeedDataModel.creationDate
-            let channelName = homeFeedDataModel.channel.channelName
-            let views = Int.random(in: 100..<800)
-            channelNameLabel.text = "\(channelName) • \(views)K views • \(creationDate)"
-        }
-    }
-    
-    
-    
 
     var thumbnailHeightConstraint: NSLayoutConstraint = NSLayoutConstraint()
     fileprivate let thumbnailImageView: UIImageView = {
         let imageView = UIImageView()
-//        imageView.backgroundColor = .red
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFit
         return imageView
@@ -99,8 +82,7 @@ class HomeFeedCell: UICollectionViewCell {
     }()
     
     
-    //MARK: - Handlers
-    
+    //MARK: - Methods
     fileprivate func setUpViews() {
         addSubview(thumbnailImageView)
         addSubview(channelImageView)
@@ -125,10 +107,21 @@ class HomeFeedCell: UICollectionViewCell {
         videoDurationLabel.bottomAnchor.constraint(equalTo: thumbnailImageView.bottomAnchor, constant: -8).isActive = true
         videoDurationLabel.trailingAnchor.constraint(equalTo: thumbnailImageView.trailingAnchor, constant: -8).isActive = true
         
-
     }
     
     
+    
+    // data binding
+    func configure(with homeFeedDataModel: HomeFeedDataModel) {
+        thumbnailImageView.image = UIImage(named: homeFeedDataModel.videoThumbnailImageUrl)
+        channelImageView.image = UIImage(named: homeFeedDataModel.channel.channelImageUrl)
+        videoTitleLabel.text = homeFeedDataModel.videoTitle
+        videoDurationLabel.text = homeFeedDataModel.videoDuration
+        let creationDate = homeFeedDataModel.creationDate
+        let channelName = homeFeedDataModel.channel.channelName
+        let views = Int.random(in: 100..<800)
+        channelNameLabel.text = "\(channelName) • \(views)K views • \(creationDate)"
+    }
     
     
     

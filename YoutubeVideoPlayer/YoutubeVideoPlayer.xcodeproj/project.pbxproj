@@ -18,7 +18,7 @@
 		E9AE20C32891C58300B87B23 /* HomeFeedDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9AE20C22891C58300B87B23 /* HomeFeedDataModel.swift */; };
 		E9AE20C52891C95100B87B23 /* HomeFeedCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9AE20C42891C95100B87B23 /* HomeFeedCell.swift */; };
 		E9AE20C82891C9BE00B87B23 /* PaddedlUILabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9AE20C72891C9BE00B87B23 /* PaddedlUILabel.swift */; };
-		E9AE20CA2891CB9E00B87B23 /* PreviewShortsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9AE20C92891CB9E00B87B23 /* PreviewShortsCollectionViewCell.swift */; };
+		E9AE20CA2891CB9E00B87B23 /* ShortsContainerViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9AE20C92891CB9E00B87B23 /* ShortsContainerViewCell.swift */; };
 		E9AE20CC2891CC2000B87B23 /* PreviewShortsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9AE20CB2891CC2000B87B23 /* PreviewShortsCell.swift */; };
 /* End PBXBuildFile section */
 
@@ -36,7 +36,7 @@
 		E9AE20C22891C58300B87B23 /* HomeFeedDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeFeedDataModel.swift; sourceTree = "<group>"; };
 		E9AE20C42891C95100B87B23 /* HomeFeedCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeFeedCell.swift; sourceTree = "<group>"; };
 		E9AE20C72891C9BE00B87B23 /* PaddedlUILabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaddedlUILabel.swift; sourceTree = "<group>"; };
-		E9AE20C92891CB9E00B87B23 /* PreviewShortsCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewShortsCollectionViewCell.swift; sourceTree = "<group>"; };
+		E9AE20C92891CB9E00B87B23 /* ShortsContainerViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortsContainerViewCell.swift; sourceTree = "<group>"; };
 		E9AE20CB2891CC2000B87B23 /* PreviewShortsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewShortsCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -51,6 +51,61 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		E9117BAD2892DF8200473313 /* HomeFeed */ = {
+			isa = PBXGroup;
+			children = (
+				E9117BB02892DFAA00473313 /* Models */,
+				E9117BAF2892DFA300473313 /* Views */,
+				E9117BAE2892DF9300473313 /* Controllers */,
+			);
+			path = HomeFeed;
+			sourceTree = "<group>";
+		};
+		E9117BAE2892DF9300473313 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				E9AE20AB2891A98A00B87B23 /* HomeVC.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		E9117BAF2892DFA300473313 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				E9AE20C42891C95100B87B23 /* HomeFeedCell.swift */,
+				E9AE20C92891CB9E00B87B23 /* ShortsContainerViewCell.swift */,
+				E9AE20CB2891CC2000B87B23 /* PreviewShortsCell.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		E9117BB02892DFAA00473313 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				E9AE20C22891C58300B87B23 /* HomeFeedDataModel.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		E9117BB12892DFCD00473313 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				E9AE20BE2891B05400B87B23 /* Constants.swift */,
+				E9AE20C02891B1AE00B87B23 /* Utils.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		E9117BB22892E00500473313 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				E9AE20A72891A98A00B87B23 /* AppDelegate.swift */,
+				E9AE20A92891A98A00B87B23 /* SceneDelegate.swift */,
+				E9AE20BC2891AAC300B87B23 /* MainTabbarVC.swift */,
+			);
+			path = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		E9AE209B2891A98A00B87B23 = {
 			isa = PBXGroup;
 			children = (
@@ -70,20 +125,13 @@
 		E9AE20A62891A98A00B87B23 /* YoutubeVideoPlayer */ = {
 			isa = PBXGroup;
 			children = (
+				E9117BB22892E00500473313 /* Supporting Files */,
+				E9117BB12892DFCD00473313 /* Utils */,
 				E9AE20C62891C9B400B87B23 /* Components */,
-				E9AE20A72891A98A00B87B23 /* AppDelegate.swift */,
-				E9AE20A92891A98A00B87B23 /* SceneDelegate.swift */,
-				E9AE20AB2891A98A00B87B23 /* HomeVC.swift */,
+				E9117BAD2892DF8200473313 /* HomeFeed */,
 				E9AE20B02891A98C00B87B23 /* Assets.xcassets */,
 				E9AE20B22891A98C00B87B23 /* LaunchScreen.storyboard */,
 				E9AE20B52891A98C00B87B23 /* Info.plist */,
-				E9AE20BC2891AAC300B87B23 /* MainTabbarVC.swift */,
-				E9AE20BE2891B05400B87B23 /* Constants.swift */,
-				E9AE20C02891B1AE00B87B23 /* Utils.swift */,
-				E9AE20C22891C58300B87B23 /* HomeFeedDataModel.swift */,
-				E9AE20C42891C95100B87B23 /* HomeFeedCell.swift */,
-				E9AE20C92891CB9E00B87B23 /* PreviewShortsCollectionViewCell.swift */,
-				E9AE20CB2891CC2000B87B23 /* PreviewShortsCell.swift */,
 			);
 			path = YoutubeVideoPlayer;
 			sourceTree = "<group>";
@@ -171,7 +219,7 @@
 				E9AE20AC2891A98A00B87B23 /* HomeVC.swift in Sources */,
 				E9AE20C52891C95100B87B23 /* HomeFeedCell.swift in Sources */,
 				E9AE20C32891C58300B87B23 /* HomeFeedDataModel.swift in Sources */,
-				E9AE20CA2891CB9E00B87B23 /* PreviewShortsCollectionViewCell.swift in Sources */,
+				E9AE20CA2891CB9E00B87B23 /* ShortsContainerViewCell.swift in Sources */,
 				E9AE20A82891A98A00B87B23 /* AppDelegate.swift in Sources */,
 				E9AE20AA2891A98A00B87B23 /* SceneDelegate.swift in Sources */,
 				E9AE20BD2891AAC300B87B23 /* MainTabbarVC.swift in Sources */,
