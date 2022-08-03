@@ -102,7 +102,7 @@ public func handleSetUpAttributedText(titleString: String, subString: String, ma
 
 
 //MARK: - Constants
- let MINI_PLAYER_HEIGHT: CGFloat = 60
+let MINI_PLAYER_HEIGHT: CGFloat = 60
 let MINI_PLAYER_WIDTH: CGFloat = UIScreen.main.bounds.width / 3
 
 

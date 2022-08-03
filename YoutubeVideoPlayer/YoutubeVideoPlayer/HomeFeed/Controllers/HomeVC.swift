@@ -26,12 +26,40 @@ class HomeVC: UICollectionViewController {
         view.backgroundColor = APP_BACKGROUND_COLOR
         handleSetUpNavBar()
         setUpCollectionView()
+        setUpViews()
     }
     
     
     //MARK: - Properties
 
+    fileprivate let animationDuration: CGFloat = 0.4
     fileprivate var posts : [HomeFeedDataModel] = []
+    
+    fileprivate var playerViewTopAnchor = NSLayoutConstraint()
+    fileprivate var videoPlayerViewHeightAnchor = NSLayoutConstraint()
+    fileprivate var videoPlayerViewWidthAnchor = NSLayoutConstraint()
+
+    
+    fileprivate let videoPlayerMaxHeight: CGFloat = UIScreen.main.bounds.width * 9 / 16 //16 x 9 is the aspect ration of most of youtube's HD videos
+    
+    fileprivate let videoPlayerMaxWidth: CGFloat = UIScreen.main.bounds.width
+    
+    fileprivate let collapsedModePadding = UIScreen.main.bounds.height - 120 // 120 is miniplayer height + tabbar height
+
+    fileprivate let playerContainerView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .yellow
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    
+    fileprivate let videoPlayerView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .red
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
     
     
     //MARK: - Methods
@@ -43,7 +71,136 @@ class HomeVC: UICollectionViewController {
         posts = HomeFeedDataModel.getMockData()
     }
 
+    
+    fileprivate func setUpViews() {
+        guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else {return}
 
+        // playerContainerView
+        window.addSubview(playerContainerView)
+        playerViewTopAnchor = playerContainerView.topAnchor.constraint(equalTo: window.topAnchor, constant: collapsedModePadding)
+        playerViewTopAnchor.isActive = true
+        
+        playerContainerView.anchor(top: nil, leading: window.leadingAnchor, bottom: nil, trailing: window.trailingAnchor, size: .init(width: 0, height: view.frame.height))
+        
+        // videoPlayerView
+        playerContainerView.addSubview(videoPlayerView)
+        videoPlayerView.anchor(top: playerContainerView.topAnchor, leading: playerContainerView.leadingAnchor, bottom: nil, trailing: nil)
+        
+        videoPlayerViewHeightAnchor = videoPlayerView.heightAnchor.constraint(equalToConstant: videoPlayerMaxHeight)
+        videoPlayerViewHeightAnchor.isActive = true
+        
+        videoPlayerViewWidthAnchor = videoPlayerView.widthAnchor.constraint(equalToConstant: videoPlayerMaxWidth)
+        
+        videoPlayerViewWidthAnchor.isActive = true
+        
+        setUpGestureRecognizers()
+        
+    }
+    
+    
+    fileprivate func setUpGestureRecognizers() {
+        let swipeGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(panGestureRecognizerAction))
+        playerContainerView.addGestureRecognizer(swipeGestureRecognizer)
+    }
+    
+
+    
+}
+
+
+
+
+//MARK: - Actions
+extension HomeVC {
+    
+    
+    @objc fileprivate func panGestureRecognizerAction(gesture: UIPanGestureRecognizer) {
+        let translation = gesture.translation(in: view)
+        
+        switch gesture.state {
+        case .changed:
+            
+            let translatedYPoint = translation.y
+            
+            // moves the containerview
+            if playerViewTopAnchor.constant < 0 {
+                playerViewTopAnchor.constant = 0 // Prevents user from dragging mediaPickerView past 0
+            } else {
+                playerViewTopAnchor.constant += translatedYPoint // Allows user to drag
+            }
+            
+            
+            
+            
+            
+            guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else {return}
+
+            switch gesture.direction(in: window) {
+                
+            case .Up:
+                
+                //maximize video player as user drags up and makes sure it never gets bigger than maxVideoPlayerHeight
+                if videoPlayerViewHeightAnchor.constant < videoPlayerMaxHeight {
+                    videoPlayerViewHeightAnchor.constant += 2
+                }
+                
+                
+                
+//                // increase width on drag up
+//                if videoPlayerViewWidthAnchor.constant < videoPlayerMaxWidth {
+//                    videoPlayerViewWidthAnchor.constant += 2
+//                }
+                
+            case .Down:
+                
+                //minimizes video player as user drags down and makes sure it never gets smaller than minVideoPlayerHeight
+                if videoPlayerViewHeightAnchor.constant > MINI_PLAYER_HEIGHT {
+                    videoPlayerViewHeightAnchor.constant -= 2
+                }
+                
+                
+                
+//                // increase width on drag up
+//                if videoPlayerViewWidthAnchor.constant > MINI_PLAYER_WIDTH {
+//                    videoPlayerViewWidthAnchor.constant -= 2
+//                }
+                
+            default:
+                break
+            }
+            
+            
+            gesture.setTranslation(.zero, in: view)
+            
+        case .failed, .cancelled, .ended:
+            onGestureCompletion(gesture: gesture)
+        default:
+            break
+        }
+        
+    }
+    
+    
+    // Set mediaPickerView back to open or collapsed position
+    fileprivate func onGestureCompletion(gesture: UIPanGestureRecognizer) {
+        let yTranslation: CGFloat = gesture.direction(in: view) == .Down ? collapsedModePadding : 0
+        
+        guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else {return}
+
+        playerViewTopAnchor.constant = yTranslation
+        if yTranslation == 0 {
+            videoPlayerViewHeightAnchor.constant = videoPlayerMaxHeight
+        } else {
+            videoPlayerViewHeightAnchor.constant = MINI_PLAYER_HEIGHT
+
+        }
+        
+        UIView.animate(withDuration: animationDuration, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.7, options: .curveEaseIn) {[weak window] in
+            window?.layoutIfNeeded()
+        }
+    }
+        
+    
     
 }
 
@@ -105,4 +262,46 @@ extension HomeVC: UICollectionViewDelegateFlowLayout {
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return posts.count
     }
+    
+    
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else {return}
+
+        playerViewTopAnchor.constant = 0
+        videoPlayerViewHeightAnchor.constant = videoPlayerMaxHeight
+
+        
+        UIView.animate(withDuration: animationDuration, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn) {[weak window] in
+            window?.layoutIfNeeded()
+        }
+        
+        
+    }
 }
+
+
+
+
+#if canImport(SwiftUI) && DEBUG
+import SwiftUI
+
+let deviceNames: [String] = [
+    "iPhone 11 Pro Max"
+]
+
+@available(iOS 13.0, *)
+struct ViewController_Preview: PreviewProvider {
+    static var previews: some View {
+        ForEach(deviceNames, id: \.self) { deviceName in
+            UIViewControllerPreview {
+                MainTabbarVC()
+            }.previewDevice(PreviewDevice(rawValue: deviceName))
+                .previewDisplayName(deviceName)
+                .ignoresSafeArea()
+        }
+    }
+}
+#endif
+
+
+
