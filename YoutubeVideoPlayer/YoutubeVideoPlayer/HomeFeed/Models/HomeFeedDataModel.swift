@@ -30,7 +30,8 @@ struct HomeFeedDataModel {
 
         let cora_samChannel = Channel(channelName: "Cora & Sam", channelImageUrl: "image9")
 
-        
+       let natGeoPost = HomeFeedDataModel(channel: naturalGeoChannel, videoThumbnailImageUrl: "nat_geo", videoTitle: "Welcome to Our Channel", videoDuration: "0:30", creationDate: "10 years ago", type: .normalYoutubeVideos)
+
         let post1 = HomeFeedDataModel(channel: hodge_twins_channel, videoThumbnailImageUrl: "hodgtwins_sandwich", videoTitle: "Eating Burger King's New Crispy Chicken Sandwich", videoDuration: "13:49", creationDate: "3 months ago", type: .normalYoutubeVideos)
         
         let post2 = HomeFeedDataModel(channel: hillsong_channel, videoThumbnailImageUrl: "what_a_beautifulname", videoTitle: "What A Beautiful Name - Hillsong Worship", videoDuration: "5:43", creationDate: "4 years ago", type: .normalYoutubeVideos)
@@ -82,7 +83,7 @@ struct HomeFeedDataModel {
 
        let secondPosts = [post11, post4, post5, post10, post6, post7, post8, post2ndShort, post9, post12, post13, post14, post15, post16, post17, post18, post19].shuffled()
         
-         return [post1, post2, post3] + secondPosts
+         return [natGeoPost, post2, post3, post1] + secondPosts
 
     }
     

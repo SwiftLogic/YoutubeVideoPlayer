@@ -77,7 +77,7 @@ class HomeVC: UICollectionViewController {
 
         // playerContainerView
         window.addSubview(playerContainerView)
-        playerViewTopAnchor = playerContainerView.topAnchor.constraint(equalTo: window.topAnchor, constant: collapsedModePadding)
+        playerViewTopAnchor = playerContainerView.topAnchor.constraint(equalTo: window.topAnchor, constant: view.frame.height)
         playerViewTopAnchor.isActive = true
         
         playerContainerView.anchor(top: nil, leading: window.leadingAnchor, bottom: nil, trailing: window.trailingAnchor, size: .init(width: 0, height: view.frame.height))
@@ -114,6 +114,37 @@ class HomeVC: UICollectionViewController {
 extension HomeVC {
     
     
+    fileprivate func collapseVideoPlayerView() {
+        // animate video player width in to collapsed mode
+        if videoPlayerViewWidthAnchor.constant == videoPlayerMaxWidth {
+            guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else {return}
+            
+            videoPlayerViewWidthAnchor.constant = MINI_PLAYER_WIDTH
+            
+            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn) {[ weak window] in
+                
+                window?.layoutIfNeeded()
+            }
+            
+        }
+    }
+    
+    
+    fileprivate func expandVideoPlayer() {
+        // animate video player width back to expanded mode
+        if videoPlayerViewWidthAnchor.constant < videoPlayerMaxWidth {
+            guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else {return}
+            
+            videoPlayerViewWidthAnchor.constant = videoPlayerMaxWidth
+            
+            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn) {[ weak window] in
+                
+                window?.layoutIfNeeded()
+            }
+            
+        }
+    }
+    
     @objc fileprivate func panGestureRecognizerAction(gesture: UIPanGestureRecognizer) {
         let translation = gesture.translation(in: view)
         
@@ -145,11 +176,10 @@ extension HomeVC {
                 }
                 
                 
+                expandVideoPlayer()
                 
-//                // increase width on drag up
-//                if videoPlayerViewWidthAnchor.constant < videoPlayerMaxWidth {
-//                    videoPlayerViewWidthAnchor.constant += 2
-//                }
+                
+                
                 
             case .Down:
                 
@@ -160,11 +190,6 @@ extension HomeVC {
                 
                 
                 
-//                // increase width on drag up
-//                if videoPlayerViewWidthAnchor.constant > MINI_PLAYER_WIDTH {
-//                    videoPlayerViewWidthAnchor.constant -= 2
-//                }
-                
             default:
                 break
             }
@@ -173,6 +198,7 @@ extension HomeVC {
             gesture.setTranslation(.zero, in: view)
             
         case .failed, .cancelled, .ended:
+         
             onGestureCompletion(gesture: gesture)
         default:
             break
@@ -183,15 +209,21 @@ extension HomeVC {
     
     // Set mediaPickerView back to open or collapsed position
     fileprivate func onGestureCompletion(gesture: UIPanGestureRecognizer) {
+        
         let yTranslation: CGFloat = gesture.direction(in: view) == .Down ? collapsedModePadding : 0
+        
         
         guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else {return}
 
         playerViewTopAnchor.constant = yTranslation
         if yTranslation == 0 {
+            //expand
             videoPlayerViewHeightAnchor.constant = videoPlayerMaxHeight
         } else {
+            //collapse
             videoPlayerViewHeightAnchor.constant = MINI_PLAYER_HEIGHT
+            collapseVideoPlayerView()
+
 
         }
         
@@ -269,6 +301,8 @@ extension HomeVC: UICollectionViewDelegateFlowLayout {
 
         playerViewTopAnchor.constant = 0
         videoPlayerViewHeightAnchor.constant = videoPlayerMaxHeight
+
+        expandVideoPlayer()
 
         
         UIView.animate(withDuration: animationDuration, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn) {[weak window] in
