@@ -47,6 +47,9 @@ class HomeVC: UICollectionViewController {
     }
 
     
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
     
     fileprivate let animationDuration: CGFloat = 0.4
     fileprivate var posts : [HomeFeedDataModel] = []
@@ -82,9 +85,8 @@ class HomeVC: UICollectionViewController {
     }()
     
     
-    fileprivate let miniPlayerControlView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .green
+    fileprivate let miniPlayerControlView: MiniPlayerControlView = {
+        let view = MiniPlayerControlView()
         return view
     }()
     
@@ -384,3 +386,102 @@ struct ViewController_Preview: PreviewProvider {
 
 
 
+class MiniPlayerControlView: UIView {
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setUpViews()
+        backgroundColor = APP_BACKGROUND_COLOR.withAlphaComponent(0.3)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
+    
+    fileprivate let videoTitleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "TwinMuscle • 931K views • 1 year ago"
+        label.textColor = .lightGray
+        label.font = UIFont.systemFont(ofSize: 12)
+        label.numberOfLines = 2
+        return label
+    }()
+    
+    
+    fileprivate let pausePlayButton: UIButton = {
+        let button = UIButton(type: .system)
+        
+        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .light, scale: .medium)
+        let image = UIImage(systemName: "play.fill", withConfiguration:
+                                config)?.withRenderingMode(.alwaysTemplate)
+
+        button.tintColor = .white
+        button.setImage(image, for: .normal)
+//        button.backgroundColor = .yellow
+        return button
+    }()
+    
+    
+    
+    
+    fileprivate let cancelButton: UIButton = {
+        let button = UIButton(type: .system)
+        
+        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .light, scale: .medium)
+        let image = UIImage(systemName: "xmark", withConfiguration:
+                                config)?.withRenderingMode(.alwaysTemplate)
+
+        button.tintColor = .white
+        button.setImage(image, for: .normal)
+//        button.backgroundColor = .red
+        return button
+    }()
+    
+    
+    fileprivate func setUpViews() {
+        addSubview(videoTitleLabel)
+        addSubview(pausePlayButton)
+        addSubview(cancelButton)
+        
+        videoTitleLabel.constrainToTop(paddingTop: 8)
+
+        videoTitleLabel.constrainToLeft(paddingLeft: 8)
+        videoTitleLabel.constrainWidth(constant: MINI_PLAYER_WIDTH)
+
+        
+        pausePlayButton.centerYInSuperview()
+        pausePlayButton.leadingAnchor.constraint(equalTo: videoTitleLabel.trailingAnchor, constant: 0).isActive = true
+        pausePlayButton.constrainHeight(constant: 40)
+        pausePlayButton.constrainWidth(constant: 60)
+        
+        
+        cancelButton.centerYInSuperview()
+        cancelButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0).isActive = true
+        cancelButton.constrainHeight(constant: 40)
+        cancelButton.constrainWidth(constant: 60)
+        
+        
+        let font = UIFont.systemFont(ofSize: 12)
+        
+        let attributedText = setupAttributedTextWithFonts(titleString: "Kamala Harris Against\n", subTitleString: "Hodge Twins", attributedTextColor: .lightGray, mainColor: .white, mainfont: font, subFont: font)
+        
+        videoTitleLabel.attributedText = attributedText
+        
+    }
+    
+}
+
+
+
+func setupAttributedTextWithFonts(titleString: String, subTitleString: String, attributedTextColor: UIColor, mainColor: UIColor, mainfont: UIFont, subFont: UIFont) -> NSMutableAttributedString{
+   
+   // title attributedText
+   let attributedText = NSMutableAttributedString(string: "\(titleString)", attributes: [NSAttributedString.Key.foregroundColor : mainColor, NSAttributedString.Key.font : mainfont])
+   
+   // subtitle attributedText
+
+   attributedText.append(NSMutableAttributedString(string: "\(subTitleString)", attributes: [NSAttributedString.Key.foregroundColor : attributedTextColor, NSAttributedString.Key.font: subFont]))
+   return attributedText
+}
