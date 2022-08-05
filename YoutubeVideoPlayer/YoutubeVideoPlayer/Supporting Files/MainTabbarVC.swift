@@ -43,7 +43,7 @@ class MainTabbarVC: UITabBarController {
     
     
     fileprivate func handleCreateTab(with controller: UIViewController, title: String?, selectedImage: UIImage?, image: UIImage?) -> UINavigationController {
-        let navController = UINavigationController(rootViewController: controller)
+        let navController = LightContentNavController(rootViewController: controller)
         navController.tabBarItem.title = title
         navController.tabBarItem.image = image
         navController.tabBarItem.selectedImage = selectedImage
@@ -55,3 +55,14 @@ class MainTabbarVC: UITabBarController {
     
 }
 
+
+final class LightContentNavController: UINavigationController {
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
+    
+    override var childForStatusBarStyle: UIViewController? {
+        return topViewController
+    }
+}

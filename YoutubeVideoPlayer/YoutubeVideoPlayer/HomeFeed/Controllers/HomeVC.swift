@@ -31,9 +31,27 @@ class HomeVC: UICollectionViewController {
     
     
     //MARK: - Properties
+    
+    
+    
+    var isStatusBarHidden: Bool = false {
+        didSet {
+            if oldValue != self.isStatusBarHidden {
+                self.setNeedsStatusBarAppearanceUpdate()
+            }
+        }
+    }
 
+    override var prefersStatusBarHidden: Bool {
+        return self.isStatusBarHidden
+    }
+
+    
+    
     fileprivate let animationDuration: CGFloat = 0.4
     fileprivate var posts : [HomeFeedDataModel] = []
+    
+    
     
     fileprivate var playerViewTopAnchor = NSLayoutConstraint()
     fileprivate var videoPlayerViewHeightAnchor = NSLayoutConstraint()
@@ -48,16 +66,25 @@ class HomeVC: UICollectionViewController {
 
     fileprivate let playerContainerView: UIView = {
         let view = UIView()
-        view.backgroundColor = .yellow
+        view.backgroundColor = APP_BACKGROUND_COLOR
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
     
-    fileprivate let videoPlayerView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .red
+    fileprivate let videoPlayerView: UIImageView = {
+        let view = UIImageView()
+        view.clipsToBounds = true
+        view.contentMode = .scaleAspectFill
+//        view.backgroundColor = APP_BACKGROUND_COLOR.withAlphaComponent(0.4)
         view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    
+    fileprivate let miniPlayerControlView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .green
         return view
     }()
     
@@ -92,6 +119,10 @@ class HomeVC: UICollectionViewController {
         videoPlayerViewWidthAnchor = videoPlayerView.widthAnchor.constraint(equalToConstant: videoPlayerMaxWidth)
         
         videoPlayerViewWidthAnchor.isActive = true
+        
+        
+        playerContainerView.addSubview(miniPlayerControlView)
+        miniPlayerControlView.anchor(top: videoPlayerView.topAnchor, leading: videoPlayerView.trailingAnchor, bottom: videoPlayerView.bottomAnchor, trailing: playerContainerView.trailingAnchor)
         
         setUpGestureRecognizers()
         
@@ -131,6 +162,7 @@ extension HomeVC {
     
     
     fileprivate func expandVideoPlayer() {
+        isStatusBarHidden = true
         // animate video player width back to expanded mode
         if videoPlayerViewWidthAnchor.constant < videoPlayerMaxWidth {
             guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else {return}
@@ -138,9 +170,19 @@ extension HomeVC {
             videoPlayerViewWidthAnchor.constant = videoPlayerMaxWidth
             
             UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn) {[ weak window] in
-                
+
                 window?.layoutIfNeeded()
             }
+            
+            
+//            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn) {[weak window] in
+//                window?.layoutIfNeeded()
+//
+//            } completion: {[weak self] onComplete in
+//                self?.isStatusBarHidden = true
+//
+//            }
+
             
         }
     }
@@ -182,7 +224,8 @@ extension HomeVC {
                 
                 
             case .Down:
-                
+                isStatusBarHidden = false
+
                 //minimizes video player as user drags down and makes sure it never gets smaller than minVideoPlayerHeight
                 if videoPlayerViewHeightAnchor.constant > MINI_PLAYER_HEIGHT {
                     videoPlayerViewHeightAnchor.constant -= 2
@@ -302,6 +345,8 @@ extension HomeVC: UICollectionViewDelegateFlowLayout {
         playerViewTopAnchor.constant = 0
         videoPlayerViewHeightAnchor.constant = videoPlayerMaxHeight
 
+        let imageName = posts[indexPath.item].videoThumbnailImageUrl
+        videoPlayerView.image = UIImage(named: imageName)
         expandVideoPlayer()
 
         
