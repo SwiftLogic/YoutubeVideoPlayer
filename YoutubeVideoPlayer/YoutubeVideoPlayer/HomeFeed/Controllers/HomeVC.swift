@@ -26,7 +26,7 @@ class HomeVC: UICollectionViewController {
         view.backgroundColor = APP_BACKGROUND_COLOR
         handleSetUpNavBar()
         setUpCollectionView()
-        setUpViews()
+        setUpPlayerViews()
     }
     
     
@@ -56,18 +56,15 @@ class HomeVC: UICollectionViewController {
     
     
     
-    fileprivate var playerViewTopAnchor = NSLayoutConstraint()
-    fileprivate var videoPlayerViewHeightAnchor = NSLayoutConstraint()
-    fileprivate var videoPlayerViewWidthAnchor = NSLayoutConstraint()
-
     
-    fileprivate let videoPlayerMaxHeight: CGFloat = UIScreen.main.bounds.width * 9 / 16 //16 x 9 is the aspect ration of most of youtube's HD videos
     
     fileprivate let videoPlayerMaxWidth: CGFloat = UIScreen.main.bounds.width
     
     fileprivate let collapsedModePadding = UIScreen.main.bounds.height - 120 // 120 is miniplayer height + tabbar height
 
-    fileprivate let playerContainerView: UIView = {
+    
+    fileprivate var videoPlayerContainerViewTopAnchor = NSLayoutConstraint()
+    fileprivate let videoPlayerContainerView: UIView = {
         let view = UIView()
         view.backgroundColor = APP_BACKGROUND_COLOR
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -75,11 +72,13 @@ class HomeVC: UICollectionViewController {
     }()
     
     
-    fileprivate let videoPlayerView: UIImageView = {
-        let view = UIImageView()
-        view.clipsToBounds = true
-        view.contentMode = .scaleAspectFill
-//        view.backgroundColor = APP_BACKGROUND_COLOR.withAlphaComponent(0.4)
+    fileprivate var videoPlayerViewHeightAnchor = NSLayoutConstraint()
+    fileprivate var videoPlayerViewWidthAnchor = NSLayoutConstraint()
+    fileprivate let videoPlayerMaxHeight: CGFloat = UIScreen.main.bounds.width * 9 / 16 //16 x 9 is the aspect ration of most of youtube's HD videos
+
+    
+    fileprivate let videoPlayerView: VideoPlayerView = {
+        let view = VideoPlayerView()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -101,19 +100,19 @@ class HomeVC: UICollectionViewController {
     }
 
     
-    fileprivate func setUpViews() {
+    fileprivate func setUpPlayerViews() {
         guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else {return}
 
-        // playerContainerView
-        window.addSubview(playerContainerView)
-        playerViewTopAnchor = playerContainerView.topAnchor.constraint(equalTo: window.topAnchor, constant: view.frame.height)
-        playerViewTopAnchor.isActive = true
+        // videoPlayerContainerView
+        window.addSubview(videoPlayerContainerView)
+        videoPlayerContainerViewTopAnchor = videoPlayerContainerView.topAnchor.constraint(equalTo: window.topAnchor, constant: view.frame.height)
+        videoPlayerContainerViewTopAnchor.isActive = true
         
-        playerContainerView.anchor(top: nil, leading: window.leadingAnchor, bottom: nil, trailing: window.trailingAnchor, size: .init(width: 0, height: view.frame.height))
+        videoPlayerContainerView.anchor(top: nil, leading: window.leadingAnchor, bottom: nil, trailing: window.trailingAnchor, size: .init(width: 0, height: view.frame.height))
         
         // videoPlayerView
-        playerContainerView.addSubview(videoPlayerView)
-        videoPlayerView.anchor(top: playerContainerView.topAnchor, leading: playerContainerView.leadingAnchor, bottom: nil, trailing: nil)
+        videoPlayerContainerView.addSubview(videoPlayerView)
+        videoPlayerView.anchor(top: videoPlayerContainerView.topAnchor, leading: videoPlayerContainerView.leadingAnchor, bottom: nil, trailing: nil)
         
         videoPlayerViewHeightAnchor = videoPlayerView.heightAnchor.constraint(equalToConstant: videoPlayerMaxHeight)
         videoPlayerViewHeightAnchor.isActive = true
@@ -122,9 +121,9 @@ class HomeVC: UICollectionViewController {
         
         videoPlayerViewWidthAnchor.isActive = true
         
-        
-        playerContainerView.addSubview(miniPlayerControlView)
-        miniPlayerControlView.anchor(top: videoPlayerView.topAnchor, leading: videoPlayerView.trailingAnchor, bottom: videoPlayerView.bottomAnchor, trailing: playerContainerView.trailingAnchor)
+        // miniPlayerControlView
+        videoPlayerContainerView.addSubview(miniPlayerControlView)
+        miniPlayerControlView.anchor(top: videoPlayerView.topAnchor, leading: videoPlayerView.trailingAnchor, bottom: videoPlayerView.bottomAnchor, trailing: videoPlayerContainerView.trailingAnchor)
         
         setUpGestureRecognizers()
         
@@ -133,7 +132,7 @@ class HomeVC: UICollectionViewController {
     
     fileprivate func setUpGestureRecognizers() {
         let swipeGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(panGestureRecognizerAction))
-        playerContainerView.addGestureRecognizer(swipeGestureRecognizer)
+        videoPlayerContainerView.addGestureRecognizer(swipeGestureRecognizer)
     }
     
 
@@ -149,6 +148,8 @@ extension HomeVC {
     
     fileprivate func collapseVideoPlayerView() {
         // animate video player width in to collapsed mode
+        miniPlayerControlView.isHidden(false)
+
         if videoPlayerViewWidthAnchor.constant == videoPlayerMaxWidth {
             guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else {return}
             
@@ -165,6 +166,8 @@ extension HomeVC {
     
     fileprivate func expandVideoPlayer() {
         isStatusBarHidden = true
+        miniPlayerControlView.isHidden(true)
+
         // animate video player width back to expanded mode
         if videoPlayerViewWidthAnchor.constant < videoPlayerMaxWidth {
             guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else {return}
@@ -175,16 +178,6 @@ extension HomeVC {
 
                 window?.layoutIfNeeded()
             }
-            
-            
-//            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn) {[weak window] in
-//                window?.layoutIfNeeded()
-//
-//            } completion: {[weak self] onComplete in
-//                self?.isStatusBarHidden = true
-//
-//            }
-
             
         }
     }
@@ -198,10 +191,10 @@ extension HomeVC {
             let translatedYPoint = translation.y
             
             // moves the containerview
-            if playerViewTopAnchor.constant < 0 {
-                playerViewTopAnchor.constant = 0 // Prevents user from dragging mediaPickerView past 0
+            if videoPlayerContainerViewTopAnchor.constant < 0 {
+                videoPlayerContainerViewTopAnchor.constant = 0 // Prevents user from dragging mediaPickerView past 0
             } else {
-                playerViewTopAnchor.constant += translatedYPoint // Allows user to drag
+                videoPlayerContainerViewTopAnchor.constant += translatedYPoint // Allows user to drag
             }
             
             
@@ -260,7 +253,7 @@ extension HomeVC {
         
         guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else {return}
 
-        playerViewTopAnchor.constant = yTranslation
+        videoPlayerContainerViewTopAnchor.constant = yTranslation
         if yTranslation == 0 {
             //expand
             videoPlayerViewHeightAnchor.constant = videoPlayerMaxHeight
@@ -342,13 +335,19 @@ extension HomeVC: UICollectionViewDelegateFlowLayout {
     
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+       
         guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else {return}
 
-        playerViewTopAnchor.constant = 0
+        videoPlayerContainerViewTopAnchor.constant = 0
         videoPlayerViewHeightAnchor.constant = videoPlayerMaxHeight
 
+        // data binding
+        let homeFeedData = posts[indexPath.item]
+        miniPlayerControlView.configure(with: homeFeedData)
         let imageName = posts[indexPath.item].videoThumbnailImageUrl
-        videoPlayerView.image = UIImage(named: imageName)
+        videoPlayerView.configure(with: UIImage(named: imageName))
+        
+        
         expandVideoPlayer()
 
         
@@ -386,102 +385,5 @@ struct ViewController_Preview: PreviewProvider {
 
 
 
-class MiniPlayerControlView: UIView {
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setUpViews()
-        backgroundColor = APP_BACKGROUND_COLOR.withAlphaComponent(0.3)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    
-    
-    fileprivate let videoTitleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "TwinMuscle • 931K views • 1 year ago"
-        label.textColor = .lightGray
-        label.font = UIFont.systemFont(ofSize: 12)
-        label.numberOfLines = 2
-        return label
-    }()
-    
-    
-    fileprivate let pausePlayButton: UIButton = {
-        let button = UIButton(type: .system)
-        
-        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .light, scale: .medium)
-        let image = UIImage(systemName: "play.fill", withConfiguration:
-                                config)?.withRenderingMode(.alwaysTemplate)
-
-        button.tintColor = .white
-        button.setImage(image, for: .normal)
-//        button.backgroundColor = .yellow
-        return button
-    }()
-    
-    
-    
-    
-    fileprivate let cancelButton: UIButton = {
-        let button = UIButton(type: .system)
-        
-        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .light, scale: .medium)
-        let image = UIImage(systemName: "xmark", withConfiguration:
-                                config)?.withRenderingMode(.alwaysTemplate)
-
-        button.tintColor = .white
-        button.setImage(image, for: .normal)
-//        button.backgroundColor = .red
-        return button
-    }()
-    
-    
-    fileprivate func setUpViews() {
-        addSubview(videoTitleLabel)
-        addSubview(pausePlayButton)
-        addSubview(cancelButton)
-        
-        videoTitleLabel.constrainToTop(paddingTop: 8)
-
-        videoTitleLabel.constrainToLeft(paddingLeft: 8)
-        videoTitleLabel.constrainWidth(constant: MINI_PLAYER_WIDTH)
-
-        
-        pausePlayButton.centerYInSuperview()
-        pausePlayButton.leadingAnchor.constraint(equalTo: videoTitleLabel.trailingAnchor, constant: 0).isActive = true
-        pausePlayButton.constrainHeight(constant: 40)
-        pausePlayButton.constrainWidth(constant: 60)
-        
-        
-        cancelButton.centerYInSuperview()
-        cancelButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0).isActive = true
-        cancelButton.constrainHeight(constant: 40)
-        cancelButton.constrainWidth(constant: 60)
-        
-        
-        let font = UIFont.systemFont(ofSize: 12)
-        
-        let attributedText = setupAttributedTextWithFonts(titleString: "Kamala Harris Against\n", subTitleString: "Hodge Twins", attributedTextColor: .lightGray, mainColor: .white, mainfont: font, subFont: font)
-        
-        videoTitleLabel.attributedText = attributedText
-        
-    }
-    
-}
 
 
-
-func setupAttributedTextWithFonts(titleString: String, subTitleString: String, attributedTextColor: UIColor, mainColor: UIColor, mainfont: UIFont, subFont: UIFont) -> NSMutableAttributedString{
-   
-   // title attributedText
-   let attributedText = NSMutableAttributedString(string: "\(titleString)", attributes: [NSAttributedString.Key.foregroundColor : mainColor, NSAttributedString.Key.font : mainfont])
-   
-   // subtitle attributedText
-
-   attributedText.append(NSMutableAttributedString(string: "\(subTitleString)", attributes: [NSAttributedString.Key.foregroundColor : attributedTextColor, NSAttributedString.Key.font: subFont]))
-   return attributedText
-}
