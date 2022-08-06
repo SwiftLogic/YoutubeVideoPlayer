@@ -6,7 +6,9 @@
 //
 
 import UIKit
-
+protocol HomeVCDelegate: AnyObject {
+    func handleOpenVideoPlayer(for homeFeedData: HomeFeedDataModel)
+}
 class HomeVC: UICollectionViewController {
     
     //MARK: - Init
@@ -26,8 +28,8 @@ class HomeVC: UICollectionViewController {
         view.backgroundColor = APP_BACKGROUND_COLOR
         handleSetUpNavBar()
         setUpCollectionView()
-        setUpPlayerViews()
-        setUpGestureRecognizers()
+//        setUpPlayerViews()
+//        setUpGestureRecognizers()
 
     }
     
@@ -36,6 +38,8 @@ class HomeVC: UICollectionViewController {
     enum VideoPlayerMode: Int {
         case expanded, minimized
     }
+    
+    weak var delegate: HomeVCDelegate?
     
     var isStatusBarHidden: Bool = false {
         didSet {
@@ -53,42 +57,8 @@ class HomeVC: UICollectionViewController {
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
     }
-    
-    fileprivate let animationDuration: CGFloat = 0.4
     fileprivate var posts : [HomeFeedDataModel] = []
-    fileprivate var videoPlayerMode: VideoPlayerMode = .expanded
     
-    
-    fileprivate let videoPlayerMaxWidth: CGFloat = UIScreen.main.bounds.width
-    
-    fileprivate let collapsedModePadding = UIScreen.main.bounds.height - 120 // 120 is miniplayer height + tabbar height
-
-    
-    fileprivate var videoPlayerContainerViewTopAnchor = NSLayoutConstraint()
-    fileprivate let videoPlayerContainerView: UIView = {
-        let view = UIView()
-        view.backgroundColor = APP_BACKGROUND_COLOR
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    
-    
-    fileprivate var videoPlayerViewHeightAnchor = NSLayoutConstraint()
-    fileprivate var videoPlayerViewWidthAnchor = NSLayoutConstraint()
-    fileprivate let videoPlayerMaxHeight: CGFloat = UIScreen.main.bounds.width * 9 / 16 //16 x 9 is the aspect ration of most of youtube's HD videos
-
-    
-    fileprivate let videoPlayerView: VideoPlayerView = {
-        let view = VideoPlayerView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    
-    
-    fileprivate let miniPlayerControlView: MiniPlayerControlView = {
-        let view = MiniPlayerControlView()
-        return view
-    }()
     
     
     //MARK: - Methods
@@ -100,208 +70,7 @@ class HomeVC: UICollectionViewController {
         posts = HomeFeedDataModel.getMockData()
     }
 
-    
-    fileprivate func setUpPlayerViews() {
-        guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else {return}
 
-        // videoPlayerContainerView
-        window.addSubview(videoPlayerContainerView)
-        videoPlayerContainerViewTopAnchor = videoPlayerContainerView.topAnchor.constraint(equalTo: window.topAnchor, constant: view.frame.height)
-        videoPlayerContainerViewTopAnchor.isActive = true
-        
-        videoPlayerContainerView.anchor(top: nil, leading: window.leadingAnchor, bottom: nil, trailing: window.trailingAnchor, size: .init(width: 0, height: view.frame.height))
-        
-        // videoPlayerView
-        videoPlayerContainerView.addSubview(videoPlayerView)
-        videoPlayerView.anchor(top: videoPlayerContainerView.topAnchor, leading: videoPlayerContainerView.leadingAnchor, bottom: nil, trailing: nil)
-        
-        videoPlayerViewHeightAnchor = videoPlayerView.heightAnchor.constraint(equalToConstant: videoPlayerMaxHeight)
-        videoPlayerViewHeightAnchor.isActive = true
-        
-        videoPlayerViewWidthAnchor = videoPlayerView.widthAnchor.constraint(equalToConstant: videoPlayerMaxWidth)
-        
-        videoPlayerViewWidthAnchor.isActive = true
-        
-        // miniPlayerControlView
-        videoPlayerContainerView.addSubview(miniPlayerControlView)
-        miniPlayerControlView.anchor(top: videoPlayerView.topAnchor, leading: videoPlayerView.trailingAnchor, bottom: videoPlayerView.bottomAnchor, trailing: videoPlayerContainerView.trailingAnchor)
-                
-    }
-    
-    
-    fileprivate func setUpGestureRecognizers() {
-        let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture))
-        videoPlayerContainerView.addGestureRecognizer(panGestureRecognizer)
-    }
-    
-
-    
-}
-
-
-
-
-//MARK: - VideoPlayer Actions
-extension HomeVC {
-    
-    
-    fileprivate func expandVideoPlayer() {
-        guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else {return}
-        videoPlayerContainerViewTopAnchor.constant = 0
-        videoPlayerViewHeightAnchor.constant = videoPlayerMaxHeight
-        maximizeVideoPlayerViewWidth()
-        isStatusBarHidden = true
-        UIView.animate(withDuration: animationDuration, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn) {[weak window] in
-            window?.layoutIfNeeded()
-        }
-    }
-    
-    
-    fileprivate func minimizeVideoPlayer() {
-        guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else {return}
-        videoPlayerContainerViewTopAnchor.constant = collapsedModePadding
-        videoPlayerViewHeightAnchor.constant = MINI_PLAYER_HEIGHT
-        minimizeVideoPlayerViewWidth()
-        isStatusBarHidden = false
-        UIView.animate(withDuration: animationDuration, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.7, options: .curveEaseIn) {[weak window] in
-            window?.layoutIfNeeded()
-        }
-    }
-    
-    
-    fileprivate func minimizeVideoPlayerViewWidth() {
-        // animates video player width into collapsed mode
-        
-        miniPlayerControlView.isHidden(false)
-
-        if videoPlayerViewWidthAnchor.constant == videoPlayerMaxWidth {
-            
-            guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else {return}
-            
-            videoPlayerViewWidthAnchor.constant = MINI_PLAYER_WIDTH
-            
-            UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.5, options: .curveEaseIn) {[ weak window] in
-                
-                window?.layoutIfNeeded()
-            }
-            
-        }
-    }
-    
-    
-    fileprivate func maximizeVideoPlayerViewWidth() {
-        
-        miniPlayerControlView.isHidden(true)
-
-        // animate video player width back to expanded mode
-        if videoPlayerViewWidthAnchor.constant < videoPlayerMaxWidth {
-            
-            guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else {return}
-            
-            videoPlayerViewWidthAnchor.constant = videoPlayerMaxWidth
-            
-            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn) {[ weak window] in
-
-                window?.layoutIfNeeded()
-            }
-            
-        }
-    }
-    
-    
-    
-    fileprivate func dragVideoPlayerContainerView(to yPoint: CGFloat) {
-        // Prevents user from dragging videoPlayerContainerView past 0
-        if videoPlayerContainerViewTopAnchor.constant < 0 {
-            videoPlayerContainerViewTopAnchor.constant = 0
-        } else {
-            // Allows us to  drag the videoPlayerContainerView up & down
-            videoPlayerContainerViewTopAnchor.constant += yPoint
-        }
-        
-    }
-    
-    
-    fileprivate func increaseVideoPlayerViewHeight() {
-        //maximizes the video player as user drags up and makes sure it never gets bigger than maxVideoPlayerHeight
-        if videoPlayerViewHeightAnchor.constant < videoPlayerMaxHeight {
-            videoPlayerViewHeightAnchor.constant += 2
-        }
-    }
-    
-    
-   fileprivate func decreaseVideoPlayerViewHeight() {
-        isStatusBarHidden = false
-        //minimizes video player as user drags down and makes sure it never gets smaller than minVideoPlayerHeight
-        let heightLimit: CGFloat = 120
-        if videoPlayerViewHeightAnchor.constant > heightLimit {
-            videoPlayerViewHeightAnchor.constant -= 2
-        }
-    }
-    
-    
-    
-   
-    
-    @objc fileprivate func handlePanGesture(_ gesture: UIPanGestureRecognizer) {
-        
-        switch gesture.state {
-            
-        case .changed:
-            
-            let yTranslation = gesture.translation(in: view).y
-            dragVideoPlayerContainerView(to: yTranslation)
-            
-            // animates videoPlayerView Dimensions based on gesture directions
-            switch gesture.direction(in: view) {
-            case .up:
-                
-                increaseVideoPlayerViewHeight()
-                maximizeVideoPlayerViewWidth()
-                
-            case .down:
-                decreaseVideoPlayerViewHeight()
-                
-            default:
-                break
-            }
-            
-            gesture.setTranslation(.zero, in: view)
-            
-        case .failed, .cancelled, .ended:
-            
-            
-            videoPlayerMode = gesture.direction(in: view) == .down ? .minimized : .expanded
-            
-            onGestureCompletion(mode: videoPlayerMode)
-            
-        default:
-            break
-        }
-        
-    }
-    
-    
-    fileprivate func onGestureCompletion(mode: VideoPlayerMode) {
-        switch mode {
-        case .expanded:
-            expandVideoPlayer()
-        case .minimized:
-            minimizeVideoPlayer()
-        }
-    }
-        
-    
-    
-    fileprivate func handleOpenVideoPlayer(for homeFeedData: HomeFeedDataModel) {
-        // data binding
-        miniPlayerControlView.configure(with: homeFeedData)
-        let imageName = homeFeedData.videoThumbnailImageUrl
-        videoPlayerView.configure(with: UIImage(named: imageName))
-        expandVideoPlayer()
-    }
-    
-    
     
 }
 
@@ -356,7 +125,6 @@ extension HomeVC: UICollectionViewDelegateFlowLayout {
             return .init(width: view.frame.width, height: 320)
         }
         
-        
     }
     
     
@@ -367,35 +135,35 @@ extension HomeVC: UICollectionViewDelegateFlowLayout {
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let homeFeedData = posts[indexPath.item]
-        handleOpenVideoPlayer(for: homeFeedData)
+        delegate?.handleOpenVideoPlayer(for: homeFeedData)
     }
     
 }
 
 
-
-
-#if canImport(SwiftUI) && DEBUG
-import SwiftUI
-
-let deviceNames: [String] = [
-    "iPhone 11 Pro Max"
-]
-
-@available(iOS 13.0, *)
-struct ViewController_Preview: PreviewProvider {
-    static var previews: some View {
-        ForEach(deviceNames, id: \.self) { deviceName in
-            UIViewControllerPreview {
-                MainTabbarVC()
-            }.previewDevice(PreviewDevice(rawValue: deviceName))
-                .previewDisplayName(deviceName)
-                .ignoresSafeArea()
-        }
-    }
-}
-#endif
-
+//
+//
+//#if canImport(SwiftUI) && DEBUG
+//import SwiftUI
+//
+//let deviceNames: [String] = [
+//    "iPhone 11 Pro Max"
+//]
+//
+//@available(iOS 13.0, *)
+//struct ViewController_Preview: PreviewProvider {
+//    static var previews: some View {
+//        ForEach(deviceNames, id: \.self) { deviceName in
+//            UIViewControllerPreview {
+//                MainTabbarVC()
+//            }.previewDevice(PreviewDevice(rawValue: deviceName))
+//                .previewDisplayName(deviceName)
+//                .ignoresSafeArea()
+//        }
+//    }
+//}
+//#endif
+//
 
 
 
