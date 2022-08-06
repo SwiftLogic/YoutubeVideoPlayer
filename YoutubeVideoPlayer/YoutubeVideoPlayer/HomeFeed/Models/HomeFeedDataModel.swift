@@ -37,6 +37,9 @@ struct HomeFeedDataModel {
         let post2 = HomeFeedDataModel(channel: hillsong_channel, videoThumbnailImageUrl: "what_a_beautifulname", videoTitle: "What A Beautiful Name - Hillsong Worship", videoDuration: "5:43", creationDate: "4 years ago", type: .normalYoutubeVideos)
         //shorts
         let post3 = HomeFeedDataModel(channel: hillsong_channel, videoThumbnailImageUrl: "still_hsw", videoTitle: "Still - Hillsong Worship", videoDuration: "6:20", creationDate: "6 years ago", type: .shortsYoutubeVideos)
+       
+       let hillSongpost3 = HomeFeedDataModel(channel: hillsong_channel, videoThumbnailImageUrl: "still_hsw", videoTitle: "Still - Hillsong Worship", videoDuration: "6:20", creationDate: "6 years ago", type: .normalYoutubeVideos)
+
         
         let post4 = HomeFeedDataModel(channel: hillsong_channel, videoThumbnailImageUrl: "image3", videoTitle: "Still - Hillsong Worship", videoDuration: "6:20", creationDate: "6 years ago", type: .normalYoutubeVideos)
 
@@ -83,7 +86,7 @@ struct HomeFeedDataModel {
 
        let secondPosts = [post11, post4, post5, post10, post6, post7, post8, post2ndShort, post9, post12, post13, post14, post15, post16, post17, post18, post19].shuffled()
         
-         return [natGeoPost, post2, post3, post1] + secondPosts
+         return [natGeoPost, post2, post3, post1, hillSongpost3] + secondPosts
 
     }
     

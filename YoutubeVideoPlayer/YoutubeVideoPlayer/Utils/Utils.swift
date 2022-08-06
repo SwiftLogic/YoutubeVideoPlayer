@@ -222,19 +222,19 @@ extension UIPanGestureRecognizer {
             self.rawValue = rawValue
         }
 
-        static let Up = PanGestureDirection(rawValue: 1 << 0)
-        static let Down = PanGestureDirection(rawValue: 1 << 1)
-        static let Left = PanGestureDirection(rawValue: 1 << 2)
-        static let Right = PanGestureDirection(rawValue: 1 << 3)
+        static let up = PanGestureDirection(rawValue: 1 << 0)
+        static let down = PanGestureDirection(rawValue: 1 << 1)
+        static let left = PanGestureDirection(rawValue: 1 << 2)
+        static let right = PanGestureDirection(rawValue: 1 << 3)
     }
 
     public func direction(in view: UIView) -> PanGestureDirection {
         let velocity = self.velocity(in: view)
         let isVerticalGesture = abs(velocity.y) > abs(velocity.x)
         if isVerticalGesture {
-            return velocity.y > 0 ? .Down : .Up
+            return velocity.y > 0 ? .down : .up
         } else {
-            return velocity.x > 0 ? .Right : .Left
+            return velocity.x > 0 ? .right : .left
         }
     }
 }

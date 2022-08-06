@@ -33,7 +33,6 @@ class HomeVC: UICollectionViewController {
     //MARK: - Properties
     
     
-    
     var isStatusBarHidden: Bool = false {
         didSet {
             if oldValue != self.isStatusBarHidden {
@@ -53,8 +52,6 @@ class HomeVC: UICollectionViewController {
     
     fileprivate let animationDuration: CGFloat = 0.4
     fileprivate var posts : [HomeFeedDataModel] = []
-    
-    
     
     
     
@@ -131,8 +128,8 @@ class HomeVC: UICollectionViewController {
     
     
     fileprivate func setUpGestureRecognizers() {
-        let swipeGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(panGestureRecognizerAction))
-        videoPlayerContainerView.addGestureRecognizer(swipeGestureRecognizer)
+        let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture))
+        videoPlayerContainerView.addGestureRecognizer(panGestureRecognizer)
     }
     
 
@@ -146,16 +143,18 @@ class HomeVC: UICollectionViewController {
 extension HomeVC {
     
     
-    fileprivate func collapseVideoPlayerView() {
-        // animate video player width in to collapsed mode
+    fileprivate func minimizeVideoPlayerViewWidth() {
+        // animates video player width into collapsed mode
+        
         miniPlayerControlView.isHidden(false)
 
         if videoPlayerViewWidthAnchor.constant == videoPlayerMaxWidth {
+            
             guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else {return}
             
             videoPlayerViewWidthAnchor.constant = MINI_PLAYER_WIDTH
             
-            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn) {[ weak window] in
+            UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.5, options: .curveEaseIn) {[ weak window] in
                 
                 window?.layoutIfNeeded()
             }
@@ -164,7 +163,7 @@ extension HomeVC {
     }
     
     
-    fileprivate func expandVideoPlayer() {
+    fileprivate func maximizeVideoPlayerViewWidth() {
         isStatusBarHidden = true
         miniPlayerControlView.isHidden(true)
 
@@ -182,56 +181,63 @@ extension HomeVC {
         }
     }
     
-    @objc fileprivate func panGestureRecognizerAction(gesture: UIPanGestureRecognizer) {
-        let translation = gesture.translation(in: view)
+    
+    
+    fileprivate func dragVideoPlayerContainerView(to yPoint: CGFloat) {
+        // Prevents user from dragging videoPlayerContainerView past 0
+        if videoPlayerContainerViewTopAnchor.constant < 0 {
+            videoPlayerContainerViewTopAnchor.constant = 0
+        } else {
+            // Allows us to  drag the videoPlayerContainerView up & down
+            videoPlayerContainerViewTopAnchor.constant += yPoint
+        }
+        
+    }
+    
+    
+    fileprivate func increaseVideoPlayerViewHeight() {
+        //maximizes the video player as user drags up and makes sure it never gets bigger than maxVideoPlayerHeight
+        if videoPlayerViewHeightAnchor.constant < videoPlayerMaxHeight {
+            videoPlayerViewHeightAnchor.constant += 2
+        }
+    }
+    
+    
+   fileprivate func decreaseVideoPlayerViewHeight() {
+        isStatusBarHidden = false
+        //minimizes video player as user drags down and makes sure it never gets smaller than minVideoPlayerHeight
+        let heightLimit: CGFloat = 120
+        if videoPlayerViewHeightAnchor.constant > heightLimit {
+            videoPlayerViewHeightAnchor.constant -= 2
+        }
+    }
+    
+    
+    
+   
+    
+    @objc fileprivate func handlePanGesture(_ gesture: UIPanGestureRecognizer) {
         
         switch gesture.state {
+            
         case .changed:
             
-            let translatedYPoint = translation.y
+            let yTranslation = gesture.translation(in: view).y
+            dragVideoPlayerContainerView(to: yTranslation)
             
-            // moves the containerview
-            if videoPlayerContainerViewTopAnchor.constant < 0 {
-                videoPlayerContainerViewTopAnchor.constant = 0 // Prevents user from dragging mediaPickerView past 0
-            } else {
-                videoPlayerContainerViewTopAnchor.constant += translatedYPoint // Allows user to drag
-            }
-            
-            
-            
-            
-            
-            guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else {return}
-
-            switch gesture.direction(in: window) {
+            // animates videoPlayerView Dimensions based on gesture directions
+            switch gesture.direction(in: view) {
+            case .up:
                 
-            case .Up:
+                increaseVideoPlayerViewHeight()
+                maximizeVideoPlayerViewWidth()
                 
-                //maximize video player as user drags up and makes sure it never gets bigger than maxVideoPlayerHeight
-                if videoPlayerViewHeightAnchor.constant < videoPlayerMaxHeight {
-                    videoPlayerViewHeightAnchor.constant += 2
-                }
-                
-                
-                expandVideoPlayer()
-                
-                
-                
-                
-            case .Down:
-                isStatusBarHidden = false
-
-                //minimizes video player as user drags down and makes sure it never gets smaller than minVideoPlayerHeight
-                if videoPlayerViewHeightAnchor.constant > MINI_PLAYER_HEIGHT {
-                    videoPlayerViewHeightAnchor.constant -= 2
-                }
-                
-                
+            case .down:
+                decreaseVideoPlayerViewHeight()
                 
             default:
                 break
             }
-            
             
             gesture.setTranslation(.zero, in: view)
             
@@ -245,29 +251,30 @@ extension HomeVC {
     }
     
     
-    // Set mediaPickerView back to open or collapsed position
+    // Set's videoPlayerView back to open or collapsed position
     fileprivate func onGestureCompletion(gesture: UIPanGestureRecognizer) {
         
-        let yTranslation: CGFloat = gesture.direction(in: view) == .Down ? collapsedModePadding : 0
-        
+        let yTranslation: CGFloat = gesture.direction(in: view) == .down ? collapsedModePadding : 0
         
         guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else {return}
 
         videoPlayerContainerViewTopAnchor.constant = yTranslation
+        
+        // 0 = expanded mode
+        // collapsedModePadding mode
         if yTranslation == 0 {
             //expand
             videoPlayerViewHeightAnchor.constant = videoPlayerMaxHeight
         } else {
             //collapse
             videoPlayerViewHeightAnchor.constant = MINI_PLAYER_HEIGHT
-            collapseVideoPlayerView()
-
-
+            minimizeVideoPlayerViewWidth()
         }
         
         UIView.animate(withDuration: animationDuration, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.7, options: .curveEaseIn) {[weak window] in
             window?.layoutIfNeeded()
         }
+        
     }
         
     
@@ -348,14 +355,12 @@ extension HomeVC: UICollectionViewDelegateFlowLayout {
         videoPlayerView.configure(with: UIImage(named: imageName))
         
         
-        expandVideoPlayer()
+        maximizeVideoPlayerViewWidth()
 
         
         UIView.animate(withDuration: animationDuration, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn) {[weak window] in
             window?.layoutIfNeeded()
         }
-        
-        
     }
 }
 
