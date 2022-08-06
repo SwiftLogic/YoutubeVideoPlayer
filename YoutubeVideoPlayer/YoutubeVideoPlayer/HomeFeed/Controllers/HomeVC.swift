@@ -27,11 +27,15 @@ class HomeVC: UICollectionViewController {
         handleSetUpNavBar()
         setUpCollectionView()
         setUpPlayerViews()
+        setUpGestureRecognizers()
+
     }
     
     
     //MARK: - Properties
-    
+    enum VideoPlayerMode: Int {
+        case expanded, minimized
+    }
     
     var isStatusBarHidden: Bool = false {
         didSet {
@@ -52,7 +56,7 @@ class HomeVC: UICollectionViewController {
     
     fileprivate let animationDuration: CGFloat = 0.4
     fileprivate var posts : [HomeFeedDataModel] = []
-    
+    fileprivate var videoPlayerMode: VideoPlayerMode = .expanded
     
     
     fileprivate let videoPlayerMaxWidth: CGFloat = UIScreen.main.bounds.width
@@ -121,9 +125,7 @@ class HomeVC: UICollectionViewController {
         // miniPlayerControlView
         videoPlayerContainerView.addSubview(miniPlayerControlView)
         miniPlayerControlView.anchor(top: videoPlayerView.topAnchor, leading: videoPlayerView.trailingAnchor, bottom: videoPlayerView.bottomAnchor, trailing: videoPlayerContainerView.trailingAnchor)
-        
-        setUpGestureRecognizers()
-        
+                
     }
     
     
@@ -139,8 +141,32 @@ class HomeVC: UICollectionViewController {
 
 
 
-//MARK: - Actions
+//MARK: - VideoPlayer Actions
 extension HomeVC {
+    
+    
+    fileprivate func expandVideoPlayer() {
+        guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else {return}
+        videoPlayerContainerViewTopAnchor.constant = 0
+        videoPlayerViewHeightAnchor.constant = videoPlayerMaxHeight
+        maximizeVideoPlayerViewWidth()
+        isStatusBarHidden = true
+        UIView.animate(withDuration: animationDuration, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn) {[weak window] in
+            window?.layoutIfNeeded()
+        }
+    }
+    
+    
+    fileprivate func minimizeVideoPlayer() {
+        guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else {return}
+        videoPlayerContainerViewTopAnchor.constant = collapsedModePadding
+        videoPlayerViewHeightAnchor.constant = MINI_PLAYER_HEIGHT
+        minimizeVideoPlayerViewWidth()
+        isStatusBarHidden = false
+        UIView.animate(withDuration: animationDuration, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.7, options: .curveEaseIn) {[weak window] in
+            window?.layoutIfNeeded()
+        }
+    }
     
     
     fileprivate func minimizeVideoPlayerViewWidth() {
@@ -164,11 +190,12 @@ extension HomeVC {
     
     
     fileprivate func maximizeVideoPlayerViewWidth() {
-        isStatusBarHidden = true
+        
         miniPlayerControlView.isHidden(true)
 
         // animate video player width back to expanded mode
         if videoPlayerViewWidthAnchor.constant < videoPlayerMaxWidth {
+            
             guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else {return}
             
             videoPlayerViewWidthAnchor.constant = videoPlayerMaxWidth
@@ -242,8 +269,12 @@ extension HomeVC {
             gesture.setTranslation(.zero, in: view)
             
         case .failed, .cancelled, .ended:
-         
-            onGestureCompletion(gesture: gesture)
+            
+            
+            videoPlayerMode = gesture.direction(in: view) == .down ? .minimized : .expanded
+            
+            onGestureCompletion(mode: videoPlayerMode)
+            
         default:
             break
         }
@@ -251,32 +282,25 @@ extension HomeVC {
     }
     
     
-    // Set's videoPlayerView back to open or collapsed position
-    fileprivate func onGestureCompletion(gesture: UIPanGestureRecognizer) {
-        
-        let yTranslation: CGFloat = gesture.direction(in: view) == .down ? collapsedModePadding : 0
-        
-        guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else {return}
-
-        videoPlayerContainerViewTopAnchor.constant = yTranslation
-        
-        // 0 = expanded mode
-        // collapsedModePadding mode
-        if yTranslation == 0 {
-            //expand
-            videoPlayerViewHeightAnchor.constant = videoPlayerMaxHeight
-        } else {
-            //collapse
-            videoPlayerViewHeightAnchor.constant = MINI_PLAYER_HEIGHT
-            minimizeVideoPlayerViewWidth()
+    fileprivate func onGestureCompletion(mode: VideoPlayerMode) {
+        switch mode {
+        case .expanded:
+            expandVideoPlayer()
+        case .minimized:
+            minimizeVideoPlayer()
         }
-        
-        UIView.animate(withDuration: animationDuration, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.7, options: .curveEaseIn) {[weak window] in
-            window?.layoutIfNeeded()
-        }
-        
     }
         
+    
+    
+    fileprivate func handleOpenVideoPlayer(for homeFeedData: HomeFeedDataModel) {
+        // data binding
+        miniPlayerControlView.configure(with: homeFeedData)
+        let imageName = homeFeedData.videoThumbnailImageUrl
+        videoPlayerView.configure(with: UIImage(named: imageName))
+        expandVideoPlayer()
+    }
+    
     
     
 }
@@ -342,26 +366,10 @@ extension HomeVC: UICollectionViewDelegateFlowLayout {
     
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-       
-        guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else {return}
-
-        videoPlayerContainerViewTopAnchor.constant = 0
-        videoPlayerViewHeightAnchor.constant = videoPlayerMaxHeight
-
-        // data binding
         let homeFeedData = posts[indexPath.item]
-        miniPlayerControlView.configure(with: homeFeedData)
-        let imageName = posts[indexPath.item].videoThumbnailImageUrl
-        videoPlayerView.configure(with: UIImage(named: imageName))
-        
-        
-        maximizeVideoPlayerViewWidth()
-
-        
-        UIView.animate(withDuration: animationDuration, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn) {[weak window] in
-            window?.layoutIfNeeded()
-        }
+        handleOpenVideoPlayer(for: homeFeedData)
     }
+    
 }
 
 
