@@ -141,6 +141,12 @@ extension HomeVC: UICollectionViewDelegateFlowLayout {
 }
 
 
+extension HomeVC: StatusBarHiddenDelegate {
+    func handleUpdate(isStatusBarHidden: Bool) {
+        self.isStatusBarHidden = isStatusBarHidden
+    }
+}
+
 //
 //
 //#if canImport(SwiftUI) && DEBUG

@@ -6,6 +6,10 @@
 //
 
 import UIKit
+protocol StatusBarHiddenDelegate: AnyObject {
+    func handleUpdate(isStatusBarHidden: Bool)
+}
+
 class MainTabbarVC: UITabBarController {
     
     
@@ -18,13 +22,23 @@ class MainTabbarVC: UITabBarController {
     }
     
     //MARK: - Properties
+    weak var statusBarHiddenDelegate: StatusBarHiddenDelegate?
+    
     enum VideoPlayerMode: Int {
         case expanded, minimized
     }
     
     
-    fileprivate var videoPlayerMode: VideoPlayerMode = .expanded
+   fileprivate var isStatusBarHidden: Bool = false {
+        didSet {
+            if oldValue != self.isStatusBarHidden {
+                statusBarHiddenDelegate?.handleUpdate(isStatusBarHidden: isStatusBarHidden)
+            }
+        }
+    }
+
     
+    fileprivate var videoPlayerMode: VideoPlayerMode = .expanded
     
     lazy var shortsController = handleCreateTab(with: UIViewController(), title: "Shorts", selectedImage: SHORTS_SELECTED_IMAGE, image: SHORTS_IMAGE)
 
@@ -37,6 +51,7 @@ class MainTabbarVC: UITabBarController {
     
     
     fileprivate let animationDuration: CGFloat = 0.4
+
     
     fileprivate let videoPlayerMaxWidth: CGFloat = UIScreen.main.bounds.width
     
@@ -47,7 +62,7 @@ class MainTabbarVC: UITabBarController {
     fileprivate var videoPlayerContainerViewTopAnchor = NSLayoutConstraint()
     fileprivate let videoPlayerContainerView: UIView = {
         let view = UIView()
-        view.backgroundColor = APP_BACKGROUND_COLOR
+        view.backgroundColor = APP_BACKGROUND_COLOR//.clear
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -75,6 +90,7 @@ class MainTabbarVC: UITabBarController {
     fileprivate func setUpViews() {
         let homeVC = HomeVC()
         homeVC.delegate = self
+        statusBarHiddenDelegate = homeVC
         
         lazy var homeNavController = handleCreateTab(with: homeVC, title: "Home", selectedImage: HOME_SELECTED_IMAGE, image: HOME_UNSELECTED_IMAGE)
 
@@ -88,7 +104,7 @@ class MainTabbarVC: UITabBarController {
     fileprivate func setUpPlayerViews() {
 
         // videoPlayerContainerView
-        view.addSubview(videoPlayerContainerView)
+        view.insertSubview(videoPlayerContainerView, belowSubview: tabBar) // this is important because it allows us to be able to interact with the player in minimized mode
         videoPlayerContainerViewTopAnchor = videoPlayerContainerView.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height)
         videoPlayerContainerViewTopAnchor.isActive = true
         
@@ -120,6 +136,7 @@ class MainTabbarVC: UITabBarController {
         videoPlayerView.addGestureRecognizer(tapGesture)
         
     }
+    
     
     
     
@@ -168,15 +185,13 @@ extension MainTabbarVC: HomeVCDelegate {
 //MARK: - VideoPlayer Actions
 extension MainTabbarVC {
     
-    
     @objc fileprivate func expandVideoPlayer() {
         videoPlayerContainerViewTopAnchor.constant = 0
         videoPlayerViewHeightAnchor.constant = videoPlayerMaxHeight
         maximizeVideoPlayerViewWidth()
-//        isStatusBarHidden = true
+        isStatusBarHidden = true
         UIView.animate(withDuration: animationDuration, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn) {[weak view] in
             view?.layoutIfNeeded()
-            print("expandVideoPlayer")
         }
     }
     
@@ -185,7 +200,7 @@ extension MainTabbarVC {
         videoPlayerContainerViewTopAnchor.constant = collapsedModePadding
         videoPlayerViewHeightAnchor.constant = MINI_PLAYER_HEIGHT
         minimizeVideoPlayerViewWidth()
-//        isStatusBarHidden = false
+        isStatusBarHidden = false
         UIView.animate(withDuration: animationDuration, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.7, options: .curveEaseIn) {[weak view] in
             view?.layoutIfNeeded()
         }
@@ -222,9 +237,7 @@ extension MainTabbarVC {
             videoPlayerViewWidthAnchor.constant = videoPlayerMaxWidth
             
             UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn) {[ weak view] in
-
                 view?.layoutIfNeeded()
-                print("maximizeVideoPlayerViewWidth")
             }
             
         }
@@ -253,7 +266,7 @@ extension MainTabbarVC {
     
     
    fileprivate func decreaseVideoPlayerViewHeight() {
-//        isStatusBarHidden = false
+        isStatusBarHidden = false
         //minimizes video player as user drags down and makes sure it never gets smaller than minVideoPlayerHeight
         let heightLimit: CGFloat = 120
         if videoPlayerViewHeightAnchor.constant > heightLimit {
@@ -273,7 +286,6 @@ extension MainTabbarVC {
             
             let yTranslation = gesture.translation(in: view).y
             dragVideoPlayerContainerView(to: yTranslation)
-            
             // animates videoPlayerView Dimensions based on gesture directions
             switch gesture.direction(in: view) {
             case .up:
@@ -292,15 +304,12 @@ extension MainTabbarVC {
             
         case .failed, .cancelled, .ended:
             
-            
             videoPlayerMode = gesture.direction(in: view) == .down ? .minimized : .expanded
-            
             onGestureCompletion(mode: videoPlayerMode)
             
         default:
             break
         }
-        
     }
     
     
@@ -312,9 +321,6 @@ extension MainTabbarVC {
             minimizeVideoPlayer()
         }
     }
-    
-    
-    
     
 }
 
