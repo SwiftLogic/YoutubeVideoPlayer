@@ -6,9 +6,6 @@
 //
 
 import UIKit
-protocol HomeVCDelegate: AnyObject {
-    func handleOpenVideoPlayer(for homeFeedData: HomeFeedDataModel)
-}
 class HomeVC: UICollectionViewController {
     
     //MARK: - Init
@@ -28,9 +25,6 @@ class HomeVC: UICollectionViewController {
         view.backgroundColor = APP_BACKGROUND_COLOR
         handleSetUpNavBar()
         setUpCollectionView()
-//        setUpPlayerViews()
-//        setUpGestureRecognizers()
-
     }
     
     
@@ -52,6 +46,13 @@ class HomeVC: UICollectionViewController {
     override var prefersStatusBarHidden: Bool {
         return self.isStatusBarHidden
     }
+    
+    override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
+        get {
+            return .slide
+        }
+    }
+
 
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -140,7 +141,7 @@ extension HomeVC: UICollectionViewDelegateFlowLayout {
     
 }
 
-
+//MARK: - StatusBarHiddenDelegate
 extension HomeVC: StatusBarHiddenDelegate {
     func handleUpdate(isStatusBarHidden: Bool) {
         self.isStatusBarHidden = isStatusBarHidden
@@ -170,7 +171,3 @@ extension HomeVC: StatusBarHiddenDelegate {
 //}
 //#endif
 //
-
-
-
-

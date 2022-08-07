@@ -14,9 +14,7 @@ let HOME_UNSELECTED_IMAGE = UIImage(named: "home_unselected")?.withRenderingMode
 let SUBSCRIPTION_SELECTED_IMAGE = UIImage(named: "subscriptions_selected")?.withRenderingMode(.alwaysTemplate)
 let SUBSCRIPTION_UNSELECTED_IMAGE = UIImage(named: "subscriptions_unselected")?.withRenderingMode(.alwaysTemplate)
 
-let createButtonsconfig = UIImage.SymbolConfiguration(pointSize: 25, weight: .thin, scale: .large) //thin
-let CREATE_POST_IMAGE = UIImage(systemName: "plus.circle", withConfiguration: createButtonsconfig)!//.withAlignmentRectInsets(UIEdgeInsets(top: 8, left: 0, bottom: -8, right: 0)) //plus.app
-
+let CREATE_POST_IMAGE = UIImage(named: "add.ic")
 
 let LIBRARY_UNSELECTED_IMAGE = UIImage(named: "libraryIcon")?.withRenderingMode(.alwaysTemplate)
 let LIBRARY_SELECTED_IMAGE = UIImage(named: "libraryIcon_Selected")?.withRenderingMode(.alwaysOriginal)

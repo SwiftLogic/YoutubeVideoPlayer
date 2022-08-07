@@ -6,10 +6,6 @@
 //
 
 import UIKit
-protocol StatusBarHiddenDelegate: AnyObject {
-    func handleUpdate(isStatusBarHidden: Bool)
-}
-
 class MainTabbarVC: UITabBarController {
     
     
@@ -19,6 +15,17 @@ class MainTabbarVC: UITabBarController {
         setUpViews()
         setUpGestureRecognizers()
 
+    }
+    
+   fileprivate var isTabBarHidden = false
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        if isTabBarHidden {
+            let offset = tabBar.frame.height
+            let tabBar = tabBar
+            tabBar.frame = tabBar.frame.offsetBy(dx: 0, dy: offset)
+        }
     }
     
     //MARK: - Properties
@@ -86,8 +93,10 @@ class MainTabbarVC: UITabBarController {
     }()
     
     
+    
     //MARK: - Methods
     fileprivate func setUpViews() {
+        
         let homeVC = HomeVC()
         homeVC.delegate = self
         statusBarHiddenDelegate = homeVC
@@ -95,10 +104,23 @@ class MainTabbarVC: UITabBarController {
         lazy var homeNavController = handleCreateTab(with: homeVC, title: "Home", selectedImage: HOME_SELECTED_IMAGE, image: HOME_UNSELECTED_IMAGE)
 
         viewControllers = [homeNavController, shortsController, createController, subsController, libraryController]
-    
+        
+        configureTabImageInset()
+        
         setUpPlayerViews()
+        
     }
     
+    
+    
+    fileprivate func configureTabImageInset() {
+        guard let items = self.tabBar.items else {return}
+        for (specificIndex, tabbarItem)  in items.enumerated() {
+            if specificIndex == 2 {
+                tabbarItem.imageInsets = UIEdgeInsets(top: 6, left: 0, bottom: -6, right: 0)
+            }
+        }
+    }
     
     
     fileprivate func setUpPlayerViews() {
@@ -186,6 +208,7 @@ extension MainTabbarVC: HomeVCDelegate {
 extension MainTabbarVC {
     
     @objc fileprivate func expandVideoPlayer() {
+        isTabBarHidden = true
         videoPlayerContainerViewTopAnchor.constant = 0
         videoPlayerViewHeightAnchor.constant = videoPlayerMaxHeight
         maximizeVideoPlayerViewWidth()
@@ -197,6 +220,7 @@ extension MainTabbarVC {
     
     
     fileprivate func minimizeVideoPlayer() {
+        isTabBarHidden = false
         videoPlayerContainerViewTopAnchor.constant = collapsedModePadding
         videoPlayerViewHeightAnchor.constant = MINI_PLAYER_HEIGHT
         minimizeVideoPlayerViewWidth()
