@@ -10,19 +10,19 @@ import UIKit
 
 //MARK: - Images
 let HOME_SELECTED_IMAGE = UIImage(named: "home_selected")?.withRenderingMode(.alwaysTemplate)
-let HOME_UNSELECTED_IMAGE = UIImage(named: "home_unselected")?.withRenderingMode(.alwaysTemplate)
+let HOME_UNSELECTED_IMAGE = UIImage(named: "home_unselected")?.withRenderingMode(.alwaysOriginal).withTintColor(.white)
 let SUBSCRIPTION_SELECTED_IMAGE = UIImage(named: "subscriptions_selected")?.withRenderingMode(.alwaysTemplate)
-let SUBSCRIPTION_UNSELECTED_IMAGE = UIImage(named: "subscriptions_unselected")?.withRenderingMode(.alwaysTemplate)
+let SUBSCRIPTION_UNSELECTED_IMAGE = UIImage(named: "subscriptions_unselected")?.withRenderingMode(.alwaysOriginal).withTintColor(.white)
 
-let CREATE_POST_IMAGE = UIImage(named: "add.ic")
+let CREATE_POST_IMAGE = UIImage(named: "add.ic")?.withRenderingMode(.alwaysOriginal).withTintColor(.white)
 
-let LIBRARY_UNSELECTED_IMAGE = UIImage(named: "libraryIcon")?.withRenderingMode(.alwaysTemplate)
+let LIBRARY_UNSELECTED_IMAGE = UIImage(named: "libraryIcon")?.withRenderingMode(.alwaysOriginal).withTintColor(.white)
 let LIBRARY_SELECTED_IMAGE = UIImage(named: "libraryIcon_Selected")?.withRenderingMode(.alwaysOriginal)
 
 
 
 let shortsButtonsconfig = UIImage.SymbolConfiguration(pointSize: 16, weight: .regular, scale: .large)
-let SHORTS_IMAGE = UIImage(systemName: "flame", withConfiguration: shortsButtonsconfig)!
+let SHORTS_IMAGE = UIImage(systemName: "flame", withConfiguration: shortsButtonsconfig)!.withRenderingMode(.alwaysOriginal).withTintColor(.white)
 let SHORTS_SELECTED_IMAGE = UIImage(systemName: "flame.fill", withConfiguration: shortsButtonsconfig)!
 
 
@@ -40,6 +40,7 @@ let BIGGER_VERTICAL_ELLIPSIS_IMAGE = UIImage(named: "biggerEllipsis")?.withRende
 let CAMERA_IMAGE = UIImage(named: "camera")?.withRenderingMode(.alwaysOriginal)
 
 let YOUTUBE_SHORTS_IMAGE = UIImage(named: "youtubeshorts")?.withRenderingMode(.alwaysOriginal)
+
 
 
 //MARK: - Colors

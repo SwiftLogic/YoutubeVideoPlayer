@@ -14,8 +14,9 @@ class MainTabbarVC: UITabBarController {
         super.viewDidLoad()
         setUpViews()
         setUpGestureRecognizers()
-
+        setUpTabBarAppearance()
     }
+    
     
    fileprivate var isTabBarHidden = false
 
@@ -27,6 +28,7 @@ class MainTabbarVC: UITabBarController {
             tabBar.frame = tabBar.frame.offsetBy(dx: 0, dy: offset)
         }
     }
+    
     
     //MARK: - Properties
     weak var statusBarHiddenDelegate: StatusBarHiddenDelegate?
@@ -95,6 +97,23 @@ class MainTabbarVC: UITabBarController {
     
     
     //MARK: - Methods
+    fileprivate func setUpTabBarAppearance() {
+        let tabBarAppearance = UITabBarAppearance()
+        let tabBarItemAppearance = UITabBarItemAppearance()
+        
+        tabBarItemAppearance.normal.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+        tabBarItemAppearance.selected.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+        
+        tabBarAppearance.configureWithDefaultBackground()
+        tabBarAppearance.backgroundColor = APP_BACKGROUND_COLOR
+        
+        tabBarAppearance.stackedLayoutAppearance = tabBarItemAppearance
+        tabBar.barTintColor = APP_BACKGROUND_COLOR
+        tabBar.standardAppearance = tabBarAppearance
+        tabBar.scrollEdgeAppearance = tabBarAppearance
+    }
+    
+    
     fileprivate func setUpViews() {
         
         let homeVC = HomeVC()
@@ -106,7 +125,6 @@ class MainTabbarVC: UITabBarController {
         viewControllers = [homeNavController, shortsController, createController, subsController, libraryController]
         
         configureTabImageInset()
-        
         setUpPlayerViews()
         
     }
