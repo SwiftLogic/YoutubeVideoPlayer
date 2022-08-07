@@ -18,3 +18,11 @@ protocol StatusBarHiddenDelegate: AnyObject {
 protocol HomeVCDelegate: AnyObject {
     func handleOpenVideoPlayer(for homeFeedData: HomeFeedDataModel)
 }
+
+
+
+//MARK: - MiniPlayerControlViewDelegate
+protocol MiniPlayerControlViewDelegate: AnyObject {
+    func handleExpandVideoPlayer()
+    func handleDismissVideoPlayer()
+}

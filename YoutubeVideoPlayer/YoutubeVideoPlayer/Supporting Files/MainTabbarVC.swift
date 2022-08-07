@@ -71,7 +71,7 @@ class MainTabbarVC: UITabBarController {
     fileprivate var videoPlayerContainerViewTopAnchor = NSLayoutConstraint()
     fileprivate let videoPlayerContainerView: UIView = {
         let view = UIView()
-        view.backgroundColor = APP_BACKGROUND_COLOR//.clear
+        view.backgroundColor = .clear
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -89,11 +89,18 @@ class MainTabbarVC: UITabBarController {
     }()
     
     
-    fileprivate let miniPlayerControlView: MiniPlayerControlView = {
+    fileprivate lazy var miniPlayerControlView: MiniPlayerControlView = {
         let view = MiniPlayerControlView()
+        view.delegate = self
         return view
     }()
     
+    
+    fileprivate let detailsContainerView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .red
+        return view
+    }()
     
     
     //MARK: - Methods
@@ -164,6 +171,11 @@ class MainTabbarVC: UITabBarController {
         // miniPlayerControlView
         videoPlayerContainerView.addSubview(miniPlayerControlView)
         miniPlayerControlView.anchor(top: videoPlayerView.topAnchor, leading: videoPlayerView.trailingAnchor, bottom: videoPlayerView.bottomAnchor, trailing: videoPlayerContainerView.trailingAnchor)
+        
+        // detailsContainerView
+        videoPlayerContainerView.addSubview(detailsContainerView)
+        detailsContainerView.anchor(top: videoPlayerView.bottomAnchor, leading: videoPlayerContainerView.leadingAnchor, bottom: videoPlayerContainerView.bottomAnchor, trailing: videoPlayerContainerView.trailingAnchor)
+
                 
     }
     
@@ -191,18 +203,6 @@ class MainTabbarVC: UITabBarController {
         
     }
     
-}
-
-
-final class LightContentNavController: UINavigationController {
-    
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
-    
-    override var childForStatusBarStyle: UIViewController? {
-        return topViewController
-    }
 }
 
 
@@ -363,6 +363,26 @@ extension MainTabbarVC {
             minimizeVideoPlayer()
         }
     }
+    
+}
+
+
+
+//MARK: - MiniPlayerControlViewDelegate
+extension MainTabbarVC: MiniPlayerControlViewDelegate {
+    
+    func handleExpandVideoPlayer() {
+        expandVideoPlayer()
+    }
+    
+    
+    func handleDismissVideoPlayer() {
+        videoPlayerContainerViewTopAnchor.constant = view.frame.height
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn) {[ weak self] in
+            self?.view.layoutIfNeeded()
+        }
+    }
+    
     
 }
 

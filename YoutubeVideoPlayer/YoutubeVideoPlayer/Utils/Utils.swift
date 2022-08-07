@@ -252,3 +252,16 @@ func setupAttributedTextWithFonts(titleString: String, subTitleString: String, a
    attributedText.append(NSMutableAttributedString(string: "\(subTitleString)", attributes: [NSAttributedString.Key.foregroundColor : attributedTextColor, NSAttributedString.Key.font: subFont]))
    return attributedText
 }
+
+
+
+final class LightContentNavController: UINavigationController {
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
+    
+    override var childForStatusBarStyle: UIViewController? {
+        return topViewController
+    }
+}

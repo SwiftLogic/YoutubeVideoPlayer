@@ -12,7 +12,7 @@ class MiniPlayerControlView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setUpViews()
-        backgroundColor = APP_BACKGROUND_COLOR.withAlphaComponent(0.3)
+        setUpGestureRecognizer()
     }
     
     required init?(coder: NSCoder) {
@@ -21,6 +21,8 @@ class MiniPlayerControlView: UIView {
     
     
     //MARK: - Properties
+    weak var delegate: MiniPlayerControlViewDelegate?
+    
     fileprivate let videoTitleLabel: UILabel = {
         let label = UILabel()
         label.text = "Charles Oliveira goes off on Khabib & Ali Abdelaziz for talking too much"
@@ -40,34 +42,15 @@ class MiniPlayerControlView: UIView {
     }()
     
     
-    fileprivate let pausePlayButton: UIButton = {
-        let button = UIButton(type: .system)
-        
-        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .light, scale: .medium)
-        let image = UIImage(systemName: "play.fill", withConfiguration:
-                                config)?.withRenderingMode(.alwaysTemplate)
-        button.tintColor = .white
-        button.setImage(image, for: .normal)
-        return button
-    }()
-    
-    
-    
-    
-    fileprivate let cancelButton: UIButton = {
-        let button = UIButton(type: .system)
-        
-        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .light, scale: .medium)
-        let image = UIImage(systemName: "xmark", withConfiguration:
-                                config)?.withRenderingMode(.alwaysTemplate)
-        button.tintColor = .white
-        button.setImage(image, for: .normal)
-        return button
-    }()
-    
+    fileprivate lazy var pausePlayButton = createButton(with: "play.fill", targetSelector: #selector(didTapPausePlayButton))
+
+    fileprivate lazy var cancelButton = createButton(with: "xmark", targetSelector: #selector(didTapCancelButton))
+ 
     
     //MARK: - Methods
     fileprivate func setUpViews() {
+        backgroundColor = APP_BACKGROUND_COLOR.withAlphaComponent(0.9)
+
         addSubview(videoTitleLabel)
         addSubview(channelNameLabel)
         addSubview(pausePlayButton)
@@ -97,6 +80,23 @@ class MiniPlayerControlView: UIView {
     }
     
     
+    fileprivate func setUpGestureRecognizer() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapExpandVideoPlayer))
+        addGestureRecognizer(tapGesture)
+    }
+    
+    
+    fileprivate func createButton(with imageName: String, targetSelector: Selector) -> UIButton {
+        let button = UIButton(type: .system)
+        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .light, scale: .medium)
+        let image = UIImage(systemName: imageName, withConfiguration:
+                                config)?.withRenderingMode(.alwaysTemplate)
+        button.tintColor = .white
+        button.setImage(image, for: .normal)
+        button.addTarget(self, action: targetSelector, for: .primaryActionTriggered)
+        return button
+    }
+    
     
     func isHidden( _ hide: Bool) {
         alpha = hide ? 0 : 1
@@ -110,4 +110,19 @@ class MiniPlayerControlView: UIView {
     }
     
     
+    //MARK: - Actions
+    @objc fileprivate func didTapCancelButton() {
+        delegate?.handleDismissVideoPlayer()
+    }
+    
+    
+    
+    @objc fileprivate func didTapExpandVideoPlayer() {
+        delegate?.handleExpandVideoPlayer()
+    }
+    
+    
+    @objc fileprivate func didTapPausePlayButton() {
+        print("didTapPausePlayButton")
+    }
 }
