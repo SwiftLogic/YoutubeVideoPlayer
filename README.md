@@ -8,6 +8,6 @@ Core Focus: NSLayConstraint Animations & Pan Gesture Animations
 Demo:
 
 
-![](https://github.com/samisays11/YoutubeVideoPlayer/blob/master/Gif-Demo/YoutubeVideoPlayerDemo1.mp4)
 
-🚧 Coming Soon...
+![](https://github.com/samisays11/YoutubeVideoPlayer/blob/master/Gif-Demo/YoutubeVideoPlayerDemo1.gif)
+
