@@ -98,7 +98,7 @@ class MainTabbarVC: UITabBarController {
     
     fileprivate let detailsContainerView: UIView = {
         let view = UIView()
-        view.backgroundColor = .red
+        view.backgroundColor = APP_BACKGROUND_COLOR
         return view
     }()
     

@@ -1,2 +1,10 @@
 # YoutubeVideoPlayer
-A clone of Youtube ios app video player using programmatic UI and UIKit
+
+A Toy Project demonstrating a programmatic UIKit way to build the Youtube iOS app video player gesture animation.
+
+
+Core Focus: NSLayConstraint Animations.
+
+Demo:
+
+🚧 Coming Soon...
