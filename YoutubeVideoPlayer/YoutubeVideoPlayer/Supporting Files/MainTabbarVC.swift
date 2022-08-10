@@ -95,7 +95,7 @@ class MainTabbarVC: UITabBarController {
         return view
     }()
     
-    
+    fileprivate var detailsContainerViewAlpha: CGFloat = 1.0
     fileprivate let detailsContainerView: UIView = {
         let view = UIView()
         view.backgroundColor = APP_BACKGROUND_COLOR
@@ -231,8 +231,8 @@ extension MainTabbarVC {
         videoPlayerViewHeightAnchor.constant = videoPlayerMaxHeight
         maximizeVideoPlayerViewWidth()
         isStatusBarHidden = true
-        UIView.animate(withDuration: animationDuration, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn) {[weak view] in
-            view?.layoutIfNeeded()
+        UIView.animate(withDuration: animationDuration, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn) {[weak self] in
+            self?.view.layoutIfNeeded()
         }
     }
     
@@ -243,8 +243,9 @@ extension MainTabbarVC {
         videoPlayerViewHeightAnchor.constant = MINI_PLAYER_HEIGHT
         minimizeVideoPlayerViewWidth()
         isStatusBarHidden = false
-        UIView.animate(withDuration: animationDuration, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.7, options: .curveEaseIn) {[weak view] in
-            view?.layoutIfNeeded()
+        UIView.animate(withDuration: animationDuration, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.7, options: .curveEaseIn) {[weak self] in
+            self?.view.layoutIfNeeded()
+
         }
     }
     
@@ -256,12 +257,11 @@ extension MainTabbarVC {
 
         if videoPlayerViewWidthAnchor.constant == videoPlayerMaxWidth {
             
-            
             videoPlayerViewWidthAnchor.constant = MINI_PLAYER_WIDTH
             
-            UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.5, options: .curveEaseIn) {[ weak view] in
-                
-                view?.layoutIfNeeded()
+//            UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.5, options: .curveEaseIn) {[ weak view] in
+            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.5, options: .curveEaseOut) { [weak self] in
+                self?.view.layoutIfNeeded()
             }
             
         }
@@ -326,6 +326,19 @@ extension MainTabbarVC {
             
         case .changed:
             
+            // DIFFERENT WAY OF PANNINIG USING FRAMES
+            let sender = gesture
+//            let translation = sender.translation(in: self.view)
+//            sender.view!.center = CGPoint(x: sender.view!.center.x, y: sender.view!.center.y + translation.y)
+//            sender.setTranslation(CGPoint(x: 0, y: 0), in: self.view)
+            
+//
+            // CALCULATING PERCENTAGE OF SCREEN PANNED
+//            let percent : CGFloat  = sender.view!.frame.origin.y/view.frame.size.height
+//            print("percent: ",  percent * 100)
+//            let alpha = 1.0 - percent
+            
+          
             let yTranslation = gesture.translation(in: view).y
             dragVideoPlayerContainerView(to: yTranslation)
             // animates videoPlayerView Dimensions based on gesture directions
@@ -335,8 +348,22 @@ extension MainTabbarVC {
                 increaseVideoPlayerViewHeight()
                 maximizeVideoPlayerViewWidth()
                 
+                
+                if sender.view!.frame.origin.y < view.frame.height / 3 {
+                    detailsContainerView.alpha += 0.001
+                } else {
+                    detailsContainerView.alpha = 1.0
+                }
+                
+
             case .down:
                 decreaseVideoPlayerViewHeight()
+                
+                if sender.view!.frame.origin.y > view.frame.height / 3 {
+                    detailsContainerView.alpha -= 0.001
+                } else {
+                    detailsContainerView.alpha = 1.0
+                }
                 
             default:
                 break
@@ -345,7 +372,6 @@ extension MainTabbarVC {
             gesture.setTranslation(.zero, in: view)
             
         case .failed, .cancelled, .ended:
-            
             videoPlayerMode = gesture.direction(in: view) == .down ? .minimized : .expanded
             onGestureCompletion(mode: videoPlayerMode)
             
