@@ -27,7 +27,7 @@ class MiniPlayerControlView: UIView {
         let label = UILabel()
         label.text = "Charles Oliveira goes off on Khabib & Ali Abdelaziz for talking too much"
         label.textColor = .white
-        label.font = UIFont.systemFont(ofSize: 13)
+        label.font = UIFont.systemFont(ofSize: 12.5)
         return label
     }()
     
@@ -36,7 +36,7 @@ class MiniPlayerControlView: UIView {
         let label = UILabel()
         label.text = "TwinMuscle"
         label.textColor = .lightGray
-        label.font = UIFont.systemFont(ofSize: 13)
+        label.font = UIFont.systemFont(ofSize: 12.5)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -44,7 +44,7 @@ class MiniPlayerControlView: UIView {
     
     fileprivate lazy var pausePlayButton = createButton(with: "play.fill", targetSelector: #selector(didTapPausePlayButton))
 
-    fileprivate lazy var cancelButton = createButton(with: "xmark", targetSelector: #selector(didTapCancelButton))
+    fileprivate lazy var cancelButton = createButton(with: "xmark", targetSelector: #selector(didTapCancelButton), imageScale: .large)
  
     
     //MARK: - Methods
@@ -57,9 +57,8 @@ class MiniPlayerControlView: UIView {
         addSubview(cancelButton)
         
         videoTitleLabel.constrainToTop(paddingTop: 10)
-
         videoTitleLabel.constrainToLeft(paddingLeft: 8)
-        videoTitleLabel.constrainWidth(constant: MINI_PLAYER_WIDTH)
+        videoTitleLabel.trailingAnchor.constraint(equalTo: pausePlayButton.leadingAnchor, constant: 0).isActive = true
         channelNameLabel.leadingAnchor.constraint(equalTo: videoTitleLabel.leadingAnchor).isActive = true
         channelNameLabel.trailingAnchor.constraint(equalTo: videoTitleLabel.trailingAnchor).isActive = true
         channelNameLabel.topAnchor.constraint(equalTo: videoTitleLabel.bottomAnchor, constant: 8).isActive = true
@@ -67,15 +66,19 @@ class MiniPlayerControlView: UIView {
 
         
         pausePlayButton.centerYInSuperview()
-        pausePlayButton.leadingAnchor.constraint(equalTo: videoTitleLabel.trailingAnchor, constant: 0).isActive = true
-        pausePlayButton.constrainHeight(constant: 40)
-        pausePlayButton.constrainWidth(constant: 60)
+//        pausePlayButton.leadingAnchor.constraint(equalTo: videoTitleLabel.trailingAnchor, constant: 0).isActive = true
+        pausePlayButton.trailingAnchor.constraint(equalTo: cancelButton.leadingAnchor, constant: 0).isActive = true
+        pausePlayButton.constrainHeight(constant: MINI_PLAYER_HEIGHT)
+        pausePlayButton.constrainWidth(constant: 50)
         
         
         cancelButton.centerYInSuperview()
-        cancelButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0).isActive = true
-        cancelButton.constrainHeight(constant: 40)
-        cancelButton.constrainWidth(constant: 60)
+        cancelButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -5).isActive = true
+        cancelButton.constrainHeight(constant: MINI_PLAYER_HEIGHT)
+        cancelButton.constrainWidth(constant: 50)
+//
+//        cancelButton.backgroundColor = .red
+//        pausePlayButton.backgroundColor = .yellow
         
     }
     
@@ -86,9 +89,9 @@ class MiniPlayerControlView: UIView {
     }
     
     
-    fileprivate func createButton(with imageName: String, targetSelector: Selector) -> UIButton {
+    fileprivate func createButton(with imageName: String, targetSelector: Selector, imageScale: UIImage.SymbolScale = .medium) -> UIButton {
         let button = UIButton(type: .system)
-        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .light, scale: .medium)
+        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .thin, scale: imageScale)
         let image = UIImage(systemName: imageName, withConfiguration:
                                 config)?.withRenderingMode(.alwaysTemplate)
         button.tintColor = .white

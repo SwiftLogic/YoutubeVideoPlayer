@@ -18,23 +18,31 @@ class MainTabbarVC: UITabBarController {
     }
     
     
-   fileprivate var isTabBarHidden = false
-
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        if isTabBarHidden {
-            let offset = tabBar.frame.height
-            let tabBar = tabBar
-            tabBar.frame = tabBar.frame.offsetBy(dx: 0, dy: offset)
-        }
-    }
     
+//    override func viewDidLayoutSubviews() {
+//        super.viewDidLayoutSubviews()
+//        if isTabBarHidden {
+//            let offset = tabBar.frame.height
+//            let tabBar = tabBar
+//            tabBar.frame = tabBar.frame.offsetBy(dx: 0, dy: offset)
+//        }
+//    }
+//
     
     //MARK: - Properties
     weak var statusBarHiddenDelegate: StatusBarHiddenDelegate?
-    
+//    fileprivate var isTabBarHidden = false
+
     enum VideoPlayerMode: Int {
         case expanded, minimized
+    }
+    
+    ///🐞 this breaks when we exit app to background mode, the animator stops responding to pan interaction
+   fileprivate lazy var propertyAnimator = UIViewPropertyAnimator(duration: 0.3, curve: .easeIn) {[weak self] in
+       guard let self = self else {return}
+       self.detailsContainerView.alpha = 0.9
+       let offset = self.tabBar.frame.height
+       self.tabBar.frame = self.tabBar.frame.offsetBy(dx: 0, dy: -offset)
     }
     
     
@@ -226,7 +234,8 @@ extension MainTabbarVC: HomeVCDelegate {
 extension MainTabbarVC {
     
     @objc fileprivate func expandVideoPlayer() {
-        isTabBarHidden = true
+//        isTabBarHidden = true
+        propertyAnimator.fractionComplete = 0.0
         videoPlayerContainerViewTopAnchor.constant = 0
         videoPlayerViewHeightAnchor.constant = videoPlayerMaxHeight
         maximizeVideoPlayerViewWidth()
@@ -238,14 +247,14 @@ extension MainTabbarVC {
     
     
     fileprivate func minimizeVideoPlayer() {
-        isTabBarHidden = false
+//        isTabBarHidden = false
+        propertyAnimator.fractionComplete = 1.0
         videoPlayerContainerViewTopAnchor.constant = collapsedModePadding
         videoPlayerViewHeightAnchor.constant = MINI_PLAYER_HEIGHT
         minimizeVideoPlayerViewWidth()
         isStatusBarHidden = false
         UIView.animate(withDuration: animationDuration, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.7, options: .curveEaseIn) {[weak self] in
             self?.view.layoutIfNeeded()
-
         }
     }
     
@@ -260,7 +269,7 @@ extension MainTabbarVC {
             videoPlayerViewWidthAnchor.constant = MINI_PLAYER_WIDTH
             
 //            UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.5, options: .curveEaseIn) {[ weak view] in
-            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.5, options: .curveEaseOut) { [weak self] in
+            UIView.animate(withDuration: 0.4, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.5, options: .curveEaseOut) { [weak self] in
                 self?.view.layoutIfNeeded()
             }
             
@@ -318,53 +327,24 @@ extension MainTabbarVC {
     
     
     
-   
-    
     @objc fileprivate func handlePanGesture(_ gesture: UIPanGestureRecognizer) {
-        
         switch gesture.state {
-            
         case .changed:
-            
-            // DIFFERENT WAY OF PANNINIG USING FRAMES
-            let sender = gesture
-//            let translation = sender.translation(in: self.view)
-//            sender.view!.center = CGPoint(x: sender.view!.center.x, y: sender.view!.center.y + translation.y)
-//            sender.setTranslation(CGPoint(x: 0, y: 0), in: self.view)
-            
-//
-            // CALCULATING PERCENTAGE OF SCREEN PANNED
-//            let percent : CGFloat  = sender.view!.frame.origin.y/view.frame.size.height
-//            print("percent: ",  percent * 100)
-//            let alpha = 1.0 - percent
-            
-          
-            let yTranslation = gesture.translation(in: view).y
-            dragVideoPlayerContainerView(to: yTranslation)
+            let translation = gesture.translation(in: view)
+            dragVideoPlayerContainerView(to: translation.y)
             // animates videoPlayerView Dimensions based on gesture directions
+            
+            let percent : CGFloat  = gesture.view!.frame.origin.y/view.frame.size.height
+            propertyAnimator.fractionComplete = percent
+            
+            
             switch gesture.direction(in: view) {
             case .up:
-                
                 increaseVideoPlayerViewHeight()
                 maximizeVideoPlayerViewWidth()
-                
-                
-                if sender.view!.frame.origin.y < view.frame.height / 3 {
-                    detailsContainerView.alpha += 0.001
-                } else {
-                    detailsContainerView.alpha = 1.0
-                }
-                
-
+              
             case .down:
                 decreaseVideoPlayerViewHeight()
-                
-                if sender.view!.frame.origin.y > view.frame.height / 3 {
-                    detailsContainerView.alpha -= 0.001
-                } else {
-                    detailsContainerView.alpha = 1.0
-                }
-                
             default:
                 break
             }
