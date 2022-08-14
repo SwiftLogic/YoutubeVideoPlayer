@@ -19,32 +19,32 @@ class MainTabbarVC: UITabBarController {
     
     
     
-//    override func viewDidLayoutSubviews() {
-//        super.viewDidLayoutSubviews()
-//        if isTabBarHidden {
-//            let offset = tabBar.frame.height
-//            let tabBar = tabBar
-//            tabBar.frame = tabBar.frame.offsetBy(dx: 0, dy: offset)
-//        }
-//    }
-//
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        if isTabBarHidden {
+            let offset = tabBar.frame.height
+            let tabBar = tabBar
+            tabBar.frame = tabBar.frame.offsetBy(dx: 0, dy: offset)
+        }
+    }
+
     
     //MARK: - Properties
     weak var statusBarHiddenDelegate: StatusBarHiddenDelegate?
-//    fileprivate var isTabBarHidden = false
+    fileprivate var isTabBarHidden = false
 
     enum VideoPlayerMode: Int {
         case expanded, minimized
     }
     
     ///🐞 this breaks when we exit app to background mode, the animator stops responding to pan interaction
-   fileprivate lazy var propertyAnimator = UIViewPropertyAnimator(duration: 0.3, curve: .easeIn) {[weak self] in
-       guard let self = self else {return}
-       self.detailsContainerView.alpha = 0.9
-       let offset = self.tabBar.frame.height
-       self.tabBar.frame = self.tabBar.frame.offsetBy(dx: 0, dy: -offset)
-    }
-    
+//   fileprivate lazy var propertyAnimator = UIViewPropertyAnimator(duration: 0.3, curve: .easeIn) {[weak self] in
+//       guard let self = self else {return}
+//       self.detailsContainerView.alpha = 0.9
+//       let offset = self.tabBar.frame.height
+//       self.tabBar.frame = self.tabBar.frame.offsetBy(dx: 0, dy: -offset)
+//    }
+//
     
    fileprivate var isStatusBarHidden: Bool = false {
         didSet {
@@ -234,8 +234,8 @@ extension MainTabbarVC: HomeVCDelegate {
 extension MainTabbarVC {
     
     @objc fileprivate func expandVideoPlayer() {
-//        isTabBarHidden = true
-        propertyAnimator.fractionComplete = 0.0
+        isTabBarHidden = true
+//        propertyAnimator.fractionComplete = 0.0
         videoPlayerContainerViewTopAnchor.constant = 0
         videoPlayerViewHeightAnchor.constant = videoPlayerMaxHeight
         maximizeVideoPlayerViewWidth()
@@ -247,8 +247,8 @@ extension MainTabbarVC {
     
     
     fileprivate func minimizeVideoPlayer() {
-//        isTabBarHidden = false
-        propertyAnimator.fractionComplete = 1.0
+        isTabBarHidden = false
+//        propertyAnimator.fractionComplete = 1.0
         videoPlayerContainerViewTopAnchor.constant = collapsedModePadding
         videoPlayerViewHeightAnchor.constant = MINI_PLAYER_HEIGHT
         minimizeVideoPlayerViewWidth()
@@ -334,9 +334,9 @@ extension MainTabbarVC {
             dragVideoPlayerContainerView(to: translation.y)
             // animates videoPlayerView Dimensions based on gesture directions
             
-            let percent : CGFloat  = gesture.view!.frame.origin.y/view.frame.size.height
-            propertyAnimator.fractionComplete = percent
-            
+//            let percent : CGFloat  = gesture.view!.frame.origin.y/view.frame.size.height
+//            propertyAnimator.fractionComplete = percent
+//            
             
             switch gesture.direction(in: view) {
             case .up:
