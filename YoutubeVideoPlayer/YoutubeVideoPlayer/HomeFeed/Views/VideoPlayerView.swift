@@ -14,7 +14,7 @@ class VideoPlayerView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setUpViews()
-        
+        setUpTapGesture()
     }
     
     required init?(coder: NSCoder) {
@@ -67,15 +67,18 @@ class VideoPlayerView: UIView {
         return slider
     }()
     
+    
+  
+    
     // pause play btn
-    fileprivate lazy var pausePlayButton = createButton(with: "play.fill", imageSize: 30)
+    fileprivate lazy var pausePlayButton = createButton(with: "pause.fill", imageSize: 30, targetSelector: #selector(didTapPausePlayButton))
     
     // [prev] button
-    fileprivate lazy var skipBackwardButton = createButton(with: "backward.end.fill")
+    fileprivate lazy var skipBackwardButton = createButton(with: "backward.end.fill", targetSelector: #selector(didTapSkipBackwardsButton))
 
     
     // skip btn
-    fileprivate lazy var skipForwardButton = createButton(with: "forward.end.fill")
+    fileprivate lazy var skipForwardButton = createButton(with: "forward.end.fill", targetSelector: #selector(didTapSkipForwardsButton))
 
     
     // time label
@@ -84,16 +87,18 @@ class VideoPlayerView: UIView {
         label.text = "0:04 / 9:19"
         label.textColor = .white
         label.font = UIFont.boldSystemFont(ofSize: 12)
+        label.alpha = 0
         return label
     }()
     
     // close player btn
     
-    fileprivate lazy var minimizeVideoPlayerBtn = createButton(with: "chevron.down", backgroundColor: .clear)
+    
+    fileprivate lazy var minimizeVideoPlayerBtn = createButton(with: "chevron.down", backgroundColor: .clear, targetSelector: #selector(didTapMinimizePlayerButton))
     
     
     // full screen mode btn
-    fileprivate lazy var fullScreenModeBtn = createButton(with: "arrow.up.left.and.arrow.down.right", imageSize: 15, backgroundColor: .clear)
+    fileprivate lazy var fullScreenModeBtn = createButton(with: "arrow.up.left.and.arrow.down.right", imageSize: 15, backgroundColor: .clear, targetSelector: #selector(didTapFullScreenModeButton))
 
     
     
@@ -153,10 +158,29 @@ class VideoPlayerView: UIView {
     }
     
     
+    fileprivate func setUpTapGesture() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(toggleControls))
+        thumbnailImageView.isUserInteractionEnabled = true
+        thumbnailImageView.addGestureRecognizer(tapGesture)
+    }
+    
+    
+    
+    fileprivate func prepareViewForReuse() {
+        let imageName = "pause.fill"
+        let image = createSfImage(with: imageName)
+        pausePlayButton.setImage(image, for: .normal)
+        playbackSlider.setThumbImage( UIImage().withRenderingMode(.alwaysTemplate), for: .normal)
+
+        [pausePlayButton, skipBackwardButton, skipForwardButton, elapsedTimeLabel, fullScreenModeBtn].forEach { view in
+            view.alpha = 0
+        }
+    }
+    
     
     fileprivate func createButton(with systemName: String,
                                   imageSize: CGFloat = 20,
-                                  backgroundColor: UIColor = UIColor.black.withAlphaComponent(0.3)) -> UIButton {
+                                  backgroundColor: UIColor = UIColor.black.withAlphaComponent(0.3), targetSelector: Selector) -> UIButton {
         
         let button = UIButton(type: .system)
         let config = UIImage.SymbolConfiguration(pointSize: imageSize, weight: .regular, scale: .medium)
@@ -165,6 +189,8 @@ class VideoPlayerView: UIView {
         button.setImage(image, for: .normal)
         button.tintColor = .white
         button.backgroundColor = backgroundColor
+        button.alpha = 0
+        button.addTarget(self, action: targetSelector, for: .primaryActionTriggered)
         return button
     }
     
@@ -174,6 +200,15 @@ class VideoPlayerView: UIView {
     }
     
     
+    
+}
+
+
+
+
+
+//MARK: - Video Player Setup & TearDown
+extension VideoPlayerView {
     
     fileprivate func setUpPlayer() {
         tearDownVideoPlayer()
@@ -217,6 +252,24 @@ class VideoPlayerView: UIView {
         guard let duration = player?.currentItem?.duration else {return}
         let durationSeconds = CMTimeGetSeconds(duration)
         playbackSlider.value = Float(seconds / durationSeconds)
+       
+       
+       // Update time remaining label
+       guard let currentTime = player?.currentTime() else { return }
+       let currentTimeInSeconds = CMTimeGetSeconds(currentTime)
+       let totalTimeInSeconds = CMTimeGetSeconds(duration)
+       let remainingTimeInSeconds = totalTimeInSeconds - currentTimeInSeconds
+       
+       let mins = remainingTimeInSeconds / 60
+       let secs = remainingTimeInSeconds.truncatingRemainder(dividingBy: 60)
+       let timeformatter = NumberFormatter()
+       timeformatter.minimumIntegerDigits = 2
+       timeformatter.minimumFractionDigits = 0
+       timeformatter.roundingMode = .down
+       guard let minsStr = timeformatter.string(from: NSNumber(value: mins)), let secsStr = timeformatter.string(from: NSNumber(value: secs)) else {
+           return
+       }
+       elapsedTimeLabel.text = "\(minsStr):\(secsStr)"
     }
     
     
@@ -227,6 +280,7 @@ class VideoPlayerView: UIView {
     
     
     func tearDownVideoPlayer() {
+       prepareViewForReuse()
        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player?.currentItem)
         if let timeObserverToken = timeObserverToken {
             player?.removeTimeObserver(timeObserverToken)
@@ -239,7 +293,7 @@ class VideoPlayerView: UIView {
     }
     
     
-   
+    
 }
 
 
@@ -252,6 +306,59 @@ extension VideoPlayerView {
         let value = Float64(playbackSlider.value) * CMTimeGetSeconds(duration)
         let seekTime = CMTime(value: CMTimeValue(value), timescale: 1)
         player?.seek(to: seekTime)
+    }
+    
+    
+    
+    @objc fileprivate func toggleControls() {
+        [pausePlayButton, skipBackwardButton, skipForwardButton, elapsedTimeLabel, fullScreenModeBtn].forEach { view in
+            
+            UIView.animate(withDuration: 0.4, delay: 0) {[weak view, weak self] in
+                guard let view = view else {return}
+                
+                if view.alpha == 0 {
+                    self?.playbackSlider.setThumbImage(#imageLiteral(resourceName: "thumb").withRenderingMode(.alwaysOriginal), for: .normal)
+                } else {
+                    self?.playbackSlider.setThumbImage( UIImage().withRenderingMode(.alwaysTemplate), for: .normal)
+                }
+                
+                view.alpha = view.alpha == 0 ? 1 : 0
+                
+            }
+            
+        }
+    }
+    
+    
+    @objc fileprivate func didTapPausePlayButton() {
+        guard let player = player else {return}
+        if player.isPlaying {
+            player.pause()
+        } else {
+            player.play()
+        }
+        pausePlayButton.setImage(player.icon, for: .normal)
+
+    }
+    
+    
+    @objc fileprivate func didTapSkipBackwardsButton() {
+        print("didTapSkipBackwardsButton")
+    }
+    
+    
+    @objc fileprivate func didTapSkipForwardsButton() {
+        print("didTapSkipForwardsButton")
+    }
+    
+    
+    @objc fileprivate func didTapFullScreenModeButton() {
+        print("didTapFullScreenModeButton")
+    }
+    
+    
+    @objc fileprivate func didTapMinimizePlayerButton() {
+        print("didTapMinimizePlayerButton")
     }
    
 }
@@ -280,169 +387,29 @@ class CustomSlider: UISlider {
    private var thumbFrame: CGRect {
        return thumbRect(forBounds: bounds, trackRect: trackRect(forBounds: bounds), value: value)
    }
-
-   
-
 }
 
-//
-//open class VideoView: UIView {
-//
-//    public enum Repeat {
-//        case once
-//        case loop
-//    }
-//
-//    override open class var layerClass: AnyClass {
-//        return AVPlayerLayer.self
-//    }
-//
-//    private var playerLayer: AVPlayerLayer {
-//        return self.layer as! AVPlayerLayer
-//    }
-//
-//    public var player: AVPlayer? {
-//        get {
-//            self.playerLayer.player
-//        }
-//        set {
-//            self.playerLayer.player = newValue
-//        }
-//    }
-//
-//
-//    open override var contentMode: UIView.ContentMode {
-//        didSet {
-//            switch self.contentMode {
-//            case .scaleAspectFit:
-//                self.playerLayer.videoGravity = .resizeAspect
-//            case .scaleAspectFill:
-//                self.playerLayer.videoGravity = .resizeAspectFill
-//            default:
-//                self.playerLayer.videoGravity = .resize
-//            }
-//        }
-//    }
-//
-//    public var `repeat`: Repeat = .once
-//
-//    public var url: URL? {
-//        didSet {
-//            guard let url = self.url else {
-//                self.teardown()
-//                return
-//            }
-//            self.setup(url: url)
-//        }
-//    }
-//
-//    @available(*, unavailable)
-//    override init(frame: CGRect) {
-//        super.init(frame: frame)
-//
-//        self.initialize()
-//    }
-//
-//    @available(*, unavailable)
-//    public required init?(coder aDecoder: NSCoder) {
-//        super.init(coder: aDecoder)
-//
-//        self.initialize()
-//    }
-//
-//    public init() {
-//        super.init(frame: .zero)
-//
-//        self.translatesAutoresizingMaskIntoConstraints = false
-//
-//        self.initialize()
-//    }
-//
-//    open func initialize() {
-//
-//    }
-//
-//    deinit {
-//        self.teardown()
-//    }
-//
-//
-//    private func setup(url: URL) {
-//
-//        self.player = AVPlayer(playerItem: AVPlayerItem(url: url))
-//
-//        self.player?.currentItem?.addObserver(self,
-//                                              forKeyPath: "status",
-//                                              options: [.old, .new],
-//                                              context: nil)
-//
-//        self.player?.addObserver(self, forKeyPath: "rate", options: [.old, .new], context: nil)
-//
-//
-//        NotificationCenter.default.addObserver(self,
-//                                               selector: #selector(self.itemDidPlayToEndTime(_:)),
-//                                               name: .AVPlayerItemDidPlayToEndTime,
-//                                               object: self.player?.currentItem)
-//
-//        NotificationCenter.default.addObserver(self,
-//                                               selector: #selector(self.itemFailedToPlayToEndTime(_:)),
-//                                               name: .AVPlayerItemFailedToPlayToEndTime,
-//                                               object: self.player?.currentItem)
-//    }
-//
-//    private func teardown() {
-//        self.player?.pause()
-//
-//        self.player?.currentItem?.removeObserver(self, forKeyPath: "status")
-//
-//        self.player?.removeObserver(self, forKeyPath: "rate")
-//
-//        NotificationCenter.default.removeObserver(self,
-//                                                  name: .AVPlayerItemDidPlayToEndTime,
-//                                                  object: self.player?.currentItem)
-//
-//        NotificationCenter.default.removeObserver(self,
-//                                                  name: .AVPlayerItemFailedToPlayToEndTime,
-//                                                  object: self.player?.currentItem)
-//
-//        self.player = nil
-//    }
-//
-//
-//
-//    @objc func itemDidPlayToEndTime(_ notification: NSNotification) {
-//        guard self.repeat == .loop else {
-//            return
-//        }
-//        self.player?.seek(to: .zero)
-//        self.player?.play()
-//    }
-//
-//    @objc func itemFailedToPlayToEndTime(_ notification: NSNotification) {
-//        self.teardown()
-//    }
-//
-//
-//    open override func observeValue(forKeyPath keyPath: String?,
-//                                          of object: Any?,
-//                                          change: [NSKeyValueChangeKey : Any]?,
-//                                          context: UnsafeMutableRawPointer?) {
-//        if keyPath == "status", let status = self.player?.currentItem?.status, status == .failed {
-//            self.teardown()
-//        }
-//
-//        if
-//            keyPath == "rate",
-//            let player = self.player,
-//            player.rate == 0,
-//            let item = player.currentItem,
-//            !item.isPlaybackBufferEmpty,
-//            CMTimeGetSeconds(item.duration) != CMTimeGetSeconds(player.currentTime())
-//        {
-//            self.player?.play()
-//        }
-//    }
-//}
-//
-//
-//
+
+
+extension AVPlayer {
+    var isPlaying: Bool {
+        return rate != 0 && error == nil
+    }
+    
+    
+    var icon: UIImage {
+        let imageName = isPlaying ? "pause.fill" : "play.fill"
+        let image = createSfImage(with: imageName)
+        return image
+    }
+
+    
+}
+
+
+func createSfImage(with systemName: String) -> UIImage {
+    let config = UIImage.SymbolConfiguration(pointSize: 30, weight: .regular, scale: .medium)
+    let image = UIImage(systemName: systemName, withConfiguration:
+                            config)?.withRenderingMode(.alwaysTemplate)
+    return image ?? UIImage()
+}
