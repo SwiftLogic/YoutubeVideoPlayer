@@ -383,6 +383,7 @@ extension MainTabbarVC: MiniPlayerControlViewDelegate {
     
     
     func handleDismissVideoPlayer() {
+        videoPlayerView.tearDownVideoPlayer()
         videoPlayerContainerViewTopAnchor.constant = view.frame.height
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn) {[ weak self] in
             self?.view.layoutIfNeeded()
