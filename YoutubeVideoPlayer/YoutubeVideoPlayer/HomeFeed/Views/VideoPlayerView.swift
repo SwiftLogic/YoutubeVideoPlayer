@@ -66,6 +66,34 @@ class VideoPlayerView: UIView {
         slider.addTarget(self, action: #selector(handleSliderDragged), for: .valueChanged)
         return slider
     }()
+    
+    // pause play btn
+    fileprivate lazy var pausePlayButton = createButton(with: "play.fill", imageSize: 30)
+    
+    // [prev] button
+    fileprivate lazy var skipBackwardButton = createButton(with: "backward.end.fill")
+
+    
+    // skip btn
+    fileprivate lazy var skipForwardButton = createButton(with: "forward.end.fill")
+
+    
+    // time label
+    fileprivate let elapsedTimeLabel: UILabel = {
+        let label = UILabel()
+        label.text = "0:04 / 9:19"
+        label.textColor = .white
+        label.font = UIFont.boldSystemFont(ofSize: 12)
+        return label
+    }()
+    
+    // close player btn
+    
+    fileprivate lazy var minimizeVideoPlayerBtn = createButton(with: "chevron.down", backgroundColor: .clear)
+    
+    
+    // full screen mode btn
+    fileprivate lazy var fullScreenModeBtn = createButton(with: "arrow.up.left.and.arrow.down.right", imageSize: 15, backgroundColor: .clear)
 
     
     
@@ -73,23 +101,76 @@ class VideoPlayerView: UIView {
     fileprivate func setUpViews() {
         addSubview(thumbnailImageView)
         addSubview(playbackSlider)
+        addSubview(elapsedTimeLabel)
+        
         thumbnailImageView.fillSuperview()
+        
         let playbackSliderHeight: CGFloat = 10
         playbackSlider.anchor(top: nil, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(top: 0, left: 0, bottom: 0, right: 0),  size: .init(width: 0, height: playbackSliderHeight))
+        
+        elapsedTimeLabel.constrainToLeft(paddingLeft: 15)
+        elapsedTimeLabel.constrainToBottom(paddingBottom: -15)
+        
+        setUpPlayBackControls()
+    }
+    
+    
+    fileprivate func setUpPlayBackControls() {
+        addSubview(pausePlayButton)
+        addSubview(skipBackwardButton)
+        addSubview(skipForwardButton)
+        addSubview(minimizeVideoPlayerBtn)
+        addSubview(fullScreenModeBtn)
+        
+        let pausePlayButtonDimen: CGFloat = 60
+        let itemSpacing: CGFloat = 35
+        pausePlayButton.layer.cornerRadius = pausePlayButtonDimen / 2
+        pausePlayButton.centerInSuperview(size: .init(width: pausePlayButtonDimen, height: pausePlayButtonDimen))
+        
+        
+        let skipButtonsDimen: CGFloat = 45
+
+        skipBackwardButton.centerYInSuperview()
+        skipBackwardButton.trailingAnchor.constraint(equalTo: pausePlayButton.leadingAnchor, constant: -itemSpacing).isActive = true 
+        skipBackwardButton.constrainHeight(constant: skipButtonsDimen)
+        skipBackwardButton.constrainWidth(constant: skipButtonsDimen)
+        skipBackwardButton.layer.cornerRadius = skipButtonsDimen / 2
+
+        
+        
+        skipForwardButton.centerYInSuperview()
+        skipForwardButton.leadingAnchor.constraint(equalTo: pausePlayButton.trailingAnchor, constant: itemSpacing).isActive = true
+        skipForwardButton.constrainHeight(constant: skipButtonsDimen)
+        skipForwardButton.constrainWidth(constant: skipButtonsDimen)
+        skipForwardButton.layer.cornerRadius = skipButtonsDimen / 2
+        
+        
+        minimizeVideoPlayerBtn.constrainToLeft(paddingLeft: 15)
+        minimizeVideoPlayerBtn.constrainToTop(paddingTop: 15)
+
+        fullScreenModeBtn.constrainToRight(paddingRight: -15)
+        fullScreenModeBtn.centerYAnchor.constraint(equalTo: elapsedTimeLabel.centerYAnchor).isActive = true
     }
     
     
     
+    fileprivate func createButton(with systemName: String,
+                                  imageSize: CGFloat = 20,
+                                  backgroundColor: UIColor = UIColor.black.withAlphaComponent(0.3)) -> UIButton {
+        
+        let button = UIButton(type: .system)
+        let config = UIImage.SymbolConfiguration(pointSize: imageSize, weight: .regular, scale: .medium)
+        let image = UIImage(systemName: systemName, withConfiguration:
+                                config)?.withRenderingMode(.alwaysTemplate)
+        button.setImage(image, for: .normal)
+        button.tintColor = .white
+        button.backgroundColor = backgroundColor
+        return button
+    }
+    
     func configure(with image: UIImage?) {
         thumbnailImageView.image = image
         videoURL =  "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-        
-        
-//        "https://player.vimeo.com/external/587646755.hd.mp4?s=c6f18daeca03bfd4f07ee7ffd702dfd88254a6ff&profile_id=174"
-        
-//        "https://player.vimeo.com/progressive_redirect/playback/694704491/rendition/360p?loc=external&oauth2_token_id=1027659655&signature=6f4425e6cbc3e6c9dfe7a01f60ab993bcf297393152794a8aa9f409173b78244"
-        
-//        "https://player.vimeo.com/external/487508532.sd.mp4?s=dfb8c469317bd740e8beec7b0b0db0675cef880e&profile_id=164"
     }
     
     
@@ -175,6 +256,13 @@ extension VideoPlayerView {
    
 }
 
+
+
+//        "https://player.vimeo.com/external/587646755.hd.mp4?s=c6f18daeca03bfd4f07ee7ffd702dfd88254a6ff&profile_id=174"
+
+//        "https://player.vimeo.com/progressive_redirect/playback/694704491/rendition/360p?loc=external&oauth2_token_id=1027659655&signature=6f4425e6cbc3e6c9dfe7a01f60ab993bcf297393152794a8aa9f409173b78244"
+
+//        "https://player.vimeo.com/external/487508532.sd.mp4?s=dfb8c469317bd740e8beec7b0b0db0675cef880e&profile_id=164"
 
 
 
