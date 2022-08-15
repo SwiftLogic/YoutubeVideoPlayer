@@ -6,6 +6,9 @@
 //
 
 import UIKit
+enum VideoPlayerMode: Int {
+    case expanded, minimized
+}
 class MainTabbarVC: UITabBarController {
     
     
@@ -31,11 +34,13 @@ class MainTabbarVC: UITabBarController {
     
     //MARK: - Properties
     weak var statusBarHiddenDelegate: StatusBarHiddenDelegate?
-    fileprivate var isTabBarHidden = false
-
-    enum VideoPlayerMode: Int {
-        case expanded, minimized
+    fileprivate var isTabBarHidden = false {
+        didSet {
+            playbackSlider.isHidden = isTabBarHidden
+        }
     }
+
+    
     
     ///🐞 this breaks when we exit app to background mode, the animator stops responding to pan interaction
 //   fileprivate lazy var propertyAnimator = UIViewPropertyAnimator(duration: 0.3, curve: .easeIn) {[weak self] in
@@ -55,7 +60,11 @@ class MainTabbarVC: UITabBarController {
     }
 
     
-    fileprivate var videoPlayerMode: VideoPlayerMode = .expanded
+    fileprivate var videoPlayerMode: VideoPlayerMode = .expanded {
+        didSet {
+            videoPlayerView.videoPlayerMode = videoPlayerMode
+        }
+    }
     
     lazy var shortsController = handleCreateTab(with: UIViewController(), title: "Shorts", selectedImage: SHORTS_SELECTED_IMAGE, image: SHORTS_IMAGE)
 
@@ -90,9 +99,10 @@ class MainTabbarVC: UITabBarController {
     fileprivate let videoPlayerMaxHeight: CGFloat = UIScreen.main.bounds.width * 9 / 16 //16 x 9 is the aspect ration of most of youtube's HD videos
 
     
-    fileprivate let videoPlayerView: VideoPlayerView = {
+    fileprivate lazy var videoPlayerView: VideoPlayerView = {
         let view = VideoPlayerView()
         view.translatesAutoresizingMaskIntoConstraints = false
+        view.delegate = self
         return view
     }()
     
@@ -110,6 +120,18 @@ class MainTabbarVC: UITabBarController {
         return view
     }()
     
+    
+    fileprivate let playbackSlider: CustomSlider = {
+        let slider = CustomSlider()
+        slider.translatesAutoresizingMaskIntoConstraints = false
+        slider.minimumTrackTintColor = .red
+        slider.maximumTrackTintColor = UIColor(white: 0.5, alpha: 0.5)
+        slider.thumbTintColor = .red
+        slider.setThumbImage( UIImage().withRenderingMode(.alwaysTemplate), for: .normal)
+        slider.setThumbImage( UIImage().withRenderingMode(.alwaysTemplate), for: .highlighted)
+        slider.isHidden = true
+        return slider
+    }()
     
     //MARK: - Methods
     fileprivate func setUpTabBarAppearance() {
@@ -183,6 +205,12 @@ class MainTabbarVC: UITabBarController {
         // detailsContainerView
         videoPlayerContainerView.addSubview(detailsContainerView)
         detailsContainerView.anchor(top: videoPlayerView.bottomAnchor, leading: videoPlayerContainerView.leadingAnchor, bottom: videoPlayerContainerView.bottomAnchor, trailing: videoPlayerContainerView.trailingAnchor)
+        
+        // playbackSlider
+        videoPlayerContainerView.addSubview(playbackSlider)
+
+        let playbackSliderHeight: CGFloat = 10
+        playbackSlider.anchor(top: nil, leading: tabBar.leadingAnchor, bottom: tabBar.topAnchor, trailing: tabBar.trailingAnchor, padding: .init(top: 0, left: 0, bottom: -5, right: 0),  size: .init(width: 0, height: playbackSliderHeight))
 
                 
     }
@@ -234,12 +262,14 @@ extension MainTabbarVC: HomeVCDelegate {
 extension MainTabbarVC {
     
     @objc fileprivate func expandVideoPlayer() {
+        videoPlayerView.isHidden(false)
         isTabBarHidden = true
 //        propertyAnimator.fractionComplete = 0.0
         videoPlayerContainerViewTopAnchor.constant = 0
         videoPlayerViewHeightAnchor.constant = videoPlayerMaxHeight
         maximizeVideoPlayerViewWidth()
         isStatusBarHidden = true
+        videoPlayerMode = .expanded
         UIView.animate(withDuration: animationDuration, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn) {[weak self] in
             self?.view.layoutIfNeeded()
         }
@@ -247,12 +277,14 @@ extension MainTabbarVC {
     
     
     fileprivate func minimizeVideoPlayer() {
+        videoPlayerView.isHidden(true)
         isTabBarHidden = false
 //        propertyAnimator.fractionComplete = 1.0
         videoPlayerContainerViewTopAnchor.constant = collapsedModePadding
         videoPlayerViewHeightAnchor.constant = MINI_PLAYER_HEIGHT
         minimizeVideoPlayerViewWidth()
         isStatusBarHidden = false
+        videoPlayerMode = .minimized
         UIView.animate(withDuration: animationDuration, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.7, options: .curveEaseIn) {[weak self] in
             self?.view.layoutIfNeeded()
         }
@@ -337,7 +369,10 @@ extension MainTabbarVC {
 //            let percent : CGFloat  = gesture.view!.frame.origin.y/view.frame.size.height
 //            propertyAnimator.fractionComplete = percent
 //            
-            
+            videoPlayerView.isHidden(true)
+            playbackSlider.isHidden = true
+
+
             switch gesture.direction(in: view) {
             case .up:
                 increaseVideoPlayerViewHeight()
@@ -391,6 +426,23 @@ extension MainTabbarVC: MiniPlayerControlViewDelegate {
     }
     
     
+}
+
+
+//MARK: - VideoPlayerViewDelegate
+extension MainTabbarVC: VideoPlayerViewDelegate {
+    func handleMinimizeVideoPlayer() {
+        minimizeVideoPlayer()
+    }
+    
+    
+    func handleMaximizeVideoPlayer() {
+        expandVideoPlayer()
+    }
+    
+    func handleUpdateSlideBar(with progress: Float) {
+        playbackSlider.value = progress
+    }
 }
 
 

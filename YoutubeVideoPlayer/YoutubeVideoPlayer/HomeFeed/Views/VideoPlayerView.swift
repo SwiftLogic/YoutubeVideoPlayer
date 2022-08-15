@@ -27,7 +27,10 @@ class VideoPlayerView: UIView {
     }
     
     //MARK: - Properties
+    weak var delegate: VideoPlayerViewDelegate?
     fileprivate var timeObserverToken: Any?
+    var videoPlayerMode: VideoPlayerMode = .expanded
+
     
     fileprivate var videoURL: String? {
         didSet {
@@ -59,7 +62,7 @@ class VideoPlayerView: UIView {
         let slider = CustomSlider()
         slider.translatesAutoresizingMaskIntoConstraints = false
         slider.minimumTrackTintColor = .red
-        slider.maximumTrackTintColor = UIColor(white: 0.5, alpha: 0.8)
+        slider.maximumTrackTintColor = UIColor(white: 0.5, alpha: 0.5)
         slider.thumbTintColor = .red
         slider.setThumbImage( UIImage().withRenderingMode(.alwaysTemplate), for: .normal)
         slider.setThumbImage(#imageLiteral(resourceName: "thumb").withRenderingMode(.alwaysOriginal), for: .highlighted)
@@ -112,7 +115,7 @@ class VideoPlayerView: UIView {
         
         let playbackSliderHeight: CGFloat = 10
         playbackSlider.anchor(top: nil, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(top: 0, left: 0, bottom: 0, right: 0),  size: .init(width: 0, height: playbackSliderHeight))
-        
+//        playbackSlider.backgroundColor = UIColor.black.withAlphaComponent(0.3)
         elapsedTimeLabel.constrainToLeft(paddingLeft: 15)
         elapsedTimeLabel.constrainToBottom(paddingBottom: -15)
         
@@ -140,8 +143,6 @@ class VideoPlayerView: UIView {
         skipBackwardButton.constrainHeight(constant: skipButtonsDimen)
         skipBackwardButton.constrainWidth(constant: skipButtonsDimen)
         skipBackwardButton.layer.cornerRadius = skipButtonsDimen / 2
-
-        
         
         skipForwardButton.centerYInSuperview()
         skipForwardButton.leadingAnchor.constraint(equalTo: pausePlayButton.trailingAnchor, constant: itemSpacing).isActive = true
@@ -150,8 +151,10 @@ class VideoPlayerView: UIView {
         skipForwardButton.layer.cornerRadius = skipButtonsDimen / 2
         
         
-        minimizeVideoPlayerBtn.constrainToLeft(paddingLeft: 15)
-        minimizeVideoPlayerBtn.constrainToTop(paddingTop: 15)
+        minimizeVideoPlayerBtn.constrainToLeft(paddingLeft: 0)
+        minimizeVideoPlayerBtn.constrainToTop(paddingTop: 0)
+        minimizeVideoPlayerBtn.constrainHeight(constant: skipButtonsDimen)
+        minimizeVideoPlayerBtn.constrainWidth(constant: skipButtonsDimen)
 
         fullScreenModeBtn.constrainToRight(paddingRight: -15)
         fullScreenModeBtn.centerYAnchor.constraint(equalTo: elapsedTimeLabel.centerYAnchor).isActive = true
@@ -159,7 +162,7 @@ class VideoPlayerView: UIView {
     
     
     fileprivate func setUpTapGesture() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(toggleControls))
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTapGestureAction))
         thumbnailImageView.isUserInteractionEnabled = true
         thumbnailImageView.addGestureRecognizer(tapGesture)
     }
@@ -172,7 +175,7 @@ class VideoPlayerView: UIView {
         pausePlayButton.setImage(image, for: .normal)
         playbackSlider.setThumbImage( UIImage().withRenderingMode(.alwaysTemplate), for: .normal)
 
-        [pausePlayButton, skipBackwardButton, skipForwardButton, elapsedTimeLabel, fullScreenModeBtn].forEach { view in
+        [pausePlayButton, skipBackwardButton, skipForwardButton, elapsedTimeLabel, fullScreenModeBtn, minimizeVideoPlayerBtn].forEach { view in
             view.alpha = 0
         }
     }
@@ -194,11 +197,23 @@ class VideoPlayerView: UIView {
         return button
     }
     
+    
     func configure(with image: UIImage?) {
         thumbnailImageView.image = image
-        videoURL =  "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+        videoURL = "https://player.vimeo.com/external/487508532.sd.mp4?s=dfb8c469317bd740e8beec7b0b0db0675cef880e&profile_id=164"
+
+//        "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
     }
     
+    
+    
+    func isHidden(_ hide: Bool) {
+        [pausePlayButton, skipBackwardButton, skipForwardButton, elapsedTimeLabel, fullScreenModeBtn, minimizeVideoPlayerBtn, playbackSlider].forEach { view in
+            
+            view.isHidden = hide
+            
+        }
+    }
     
     
 }
@@ -225,6 +240,8 @@ extension VideoPlayerView {
         thumbnailImageView.layer.addSublayer(playerLayer)
         self.player?.play()
         
+//        player.addObserver(self, forKeyPath: "currentItem.loadedTimeRanges", options: .new, context: nil)
+
         setUpPeriodicTimeObserver()
        
         //alerts that video completed playing
@@ -246,32 +263,32 @@ extension VideoPlayerView {
     }
     
     
-   private  func updateVideoPlayerState(with elapsedTime: CMTime) {
+    private  func updateVideoPlayerState(with elapsedTime: CMTime) {
         let seconds = CMTimeGetSeconds(elapsedTime)
         //lets move slider thumb
         guard let duration = player?.currentItem?.duration else {return}
         let durationSeconds = CMTimeGetSeconds(duration)
-        playbackSlider.value = Float(seconds / durationSeconds)
-       
-       
-       // Update time remaining label
-       guard let currentTime = player?.currentTime() else { return }
-       let currentTimeInSeconds = CMTimeGetSeconds(currentTime)
-       let totalTimeInSeconds = CMTimeGetSeconds(duration)
-       let remainingTimeInSeconds = totalTimeInSeconds - currentTimeInSeconds
-       
-       let mins = remainingTimeInSeconds / 60
-       let secs = remainingTimeInSeconds.truncatingRemainder(dividingBy: 60)
-       let timeformatter = NumberFormatter()
-       timeformatter.minimumIntegerDigits = 2
-       timeformatter.minimumFractionDigits = 0
-       timeformatter.roundingMode = .down
-       guard let minsStr = timeformatter.string(from: NSNumber(value: mins)), let secsStr = timeformatter.string(from: NSNumber(value: secs)) else {
-           return
-       }
-       elapsedTimeLabel.text = "\(minsStr):\(secsStr)"
+        let progress = Float(seconds / durationSeconds)
+        playbackSlider.value = progress
+        delegate?.handleUpdateSlideBar(with: progress)
+        
+        // Updating Elapsed Time
+        let totalDurationInSeconds = CMTimeGetSeconds(duration)
+        
+        let secondsString = String(format: "%02d", Int(seconds .truncatingRemainder(dividingBy: 60)))
+        
+        let minutesString = String(format: "%02d", Int(seconds) / 60)
+        
+        let currentTime = "\(minutesString):\(secondsString)"
+        
+        guard totalDurationInSeconds.isFinite else {return}
+        
+        let videoLength = String(format: "%02d:%02d",Int((totalDurationInSeconds / 60)),Int(totalDurationInSeconds) % 60)
+        
+        elapsedTimeLabel.text = currentTime + " / " + videoLength
     }
     
+
     
     @objc fileprivate func playerDidPlayToEndTime(notification: Notification) {
         player?.seek(to: CMTime.zero)
@@ -293,7 +310,6 @@ extension VideoPlayerView {
     }
     
     
-    
 }
 
 
@@ -310,9 +326,19 @@ extension VideoPlayerView {
     
     
     
-    @objc fileprivate func toggleControls() {
-        [pausePlayButton, skipBackwardButton, skipForwardButton, elapsedTimeLabel, fullScreenModeBtn].forEach { view in
-            
+    @objc fileprivate func handleTapGestureAction() {
+        switch videoPlayerMode {
+        case .expanded:
+            handleToggleControls()
+        case .minimized:
+            delegate?.handleMaximizeVideoPlayer()
+        }
+    }
+    
+    
+    
+    fileprivate func handleToggleControls() {
+        [pausePlayButton, skipBackwardButton, skipForwardButton, elapsedTimeLabel, fullScreenModeBtn, minimizeVideoPlayerBtn].forEach { view in
             UIView.animate(withDuration: 0.4, delay: 0) {[weak view, weak self] in
                 guard let view = view else {return}
                 
@@ -325,9 +351,9 @@ extension VideoPlayerView {
                 view.alpha = view.alpha == 0 ? 1 : 0
                 
             }
-            
         }
     }
+    
     
     
     @objc fileprivate func didTapPausePlayButton() {
@@ -359,6 +385,7 @@ extension VideoPlayerView {
     
     @objc fileprivate func didTapMinimizePlayerButton() {
         print("didTapMinimizePlayerButton")
+        delegate?.handleMinimizeVideoPlayer()
     }
    
 }
@@ -378,7 +405,7 @@ extension VideoPlayerView {
 class CustomSlider: UISlider {
    
    
-   @IBInspectable var trackHeight: CGFloat = 5
+   @IBInspectable var trackHeight: CGFloat = 3
 
    override func trackRect(forBounds bounds: CGRect) -> CGRect {
        return CGRect(origin: CGPoint(x: bounds.origin.x, y: bounds.origin.y + trackHeight), size: CGSize(width: bounds.width, height: trackHeight))
@@ -396,14 +423,11 @@ extension AVPlayer {
         return rate != 0 && error == nil
     }
     
-    
     var icon: UIImage {
         let imageName = isPlaying ? "pause.fill" : "play.fill"
         let image = createSfImage(with: imageName)
         return image
     }
-
-    
 }
 
 

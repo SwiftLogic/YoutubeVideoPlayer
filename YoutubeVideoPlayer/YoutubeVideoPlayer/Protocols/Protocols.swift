@@ -26,3 +26,12 @@ protocol MiniPlayerControlViewDelegate: AnyObject {
     func handleExpandVideoPlayer()
     func handleDismissVideoPlayer()
 }
+
+
+
+//MARK: - VideoPlayerView
+protocol VideoPlayerViewDelegate: AnyObject {
+    func handleMinimizeVideoPlayer()
+    func handleMaximizeVideoPlayer()
+    func handleUpdateSlideBar(with progress: Float)
+}
