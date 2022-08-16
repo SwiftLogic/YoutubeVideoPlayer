@@ -420,11 +420,17 @@ extension MainTabbarVC: MiniPlayerControlViewDelegate {
     func handleDismissVideoPlayer() {
         videoPlayerView.tearDownVideoPlayer()
         videoPlayerContainerViewTopAnchor.constant = view.frame.height
+        playbackSlider.isHidden = true
+        playbackSlider.value = 0
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn) {[ weak self] in
             self?.view.layoutIfNeeded()
         }
     }
     
+    
+    func handleChangePlayStatus(play: Bool) {
+        videoPlayerView.didTapPausePlayButton()
+    }
     
 }
 
@@ -442,6 +448,12 @@ extension MainTabbarVC: VideoPlayerViewDelegate {
     
     func handleUpdateSlideBar(with progress: Float) {
         playbackSlider.value = progress
+    }
+    
+    
+    func videoPlayStatusChanged(isPlaying: Bool) {
+        let imageName = isPlaying ? "pause.fill" : "play.fill"
+        miniPlayerControlView.updatePlayButton(with: imageName, isPlaying: isPlaying)
     }
 }
 

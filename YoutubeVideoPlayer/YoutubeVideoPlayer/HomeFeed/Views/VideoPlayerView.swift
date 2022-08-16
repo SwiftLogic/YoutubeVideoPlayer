@@ -239,6 +239,7 @@ extension VideoPlayerView {
         self.playerLayer = playerLayer
         thumbnailImageView.layer.addSublayer(playerLayer)
         self.player?.play()
+        delegate?.videoPlayStatusChanged(isPlaying: true)
         
 //        player.addObserver(self, forKeyPath: "currentItem.loadedTimeRanges", options: .new, context: nil)
 
@@ -356,12 +357,15 @@ extension VideoPlayerView {
     
     
     
-    @objc fileprivate func didTapPausePlayButton() {
+    @objc  func didTapPausePlayButton() {
         guard let player = player else {return}
         if player.isPlaying {
             player.pause()
+            delegate?.videoPlayStatusChanged(isPlaying: false)
         } else {
             player.play()
+            delegate?.videoPlayStatusChanged(isPlaying: true)
+
         }
         pausePlayButton.setImage(player.icon, for: .normal)
 

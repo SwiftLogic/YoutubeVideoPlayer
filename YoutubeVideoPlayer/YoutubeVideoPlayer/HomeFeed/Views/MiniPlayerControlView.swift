@@ -46,6 +46,7 @@ class MiniPlayerControlView: UIView {
 
     fileprivate lazy var cancelButton = createButton(with: "xmark", targetSelector: #selector(didTapCancelButton), imageScale: .large)
  
+    var isPlaying: Bool = false
     
     //MARK: - Methods
     fileprivate func setUpViews() {
@@ -91,9 +92,7 @@ class MiniPlayerControlView: UIView {
     
     fileprivate func createButton(with imageName: String, targetSelector: Selector, imageScale: UIImage.SymbolScale = .medium) -> UIButton {
         let button = UIButton(type: .system)
-        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .thin, scale: imageScale)
-        let image = UIImage(systemName: imageName, withConfiguration:
-                                config)?.withRenderingMode(.alwaysTemplate)
+        let image = createSFImage(imageName: imageName, imageScale: imageScale)
         button.tintColor = .white
         button.setImage(image, for: .normal)
         button.addTarget(self, action: targetSelector, for: .primaryActionTriggered)
@@ -101,10 +100,25 @@ class MiniPlayerControlView: UIView {
     }
     
     
+    func updatePlayButton(with imageName: String, isPlaying: Bool) {
+        let image = createSFImage(imageName: imageName)
+        pausePlayButton.setImage(image, for: .normal)
+        self.isPlaying = isPlaying
+    }
+    
+    
     func isHidden( _ hide: Bool) {
         alpha = hide ? 0 : 1
     }
     
+    
+    fileprivate func createSFImage(imageName: String, imageScale: UIImage.SymbolScale = .medium) -> UIImage {
+        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .thin, scale: imageScale)
+        let image = UIImage(systemName: imageName, withConfiguration:
+                                config)?.withRenderingMode(.alwaysTemplate)
+        
+        return image ?? UIImage()
+    }
     
     //MARK: - Data Binding
     func configure(with data: HomeFeedDataModel) {
@@ -126,6 +140,6 @@ class MiniPlayerControlView: UIView {
     
     
     @objc fileprivate func didTapPausePlayButton() {
-        print("didTapPausePlayButton")
+        delegate?.handleChangePlayStatus(play: isPlaying)
     }
 }

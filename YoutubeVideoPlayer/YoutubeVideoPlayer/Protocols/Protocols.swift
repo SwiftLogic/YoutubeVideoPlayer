@@ -25,6 +25,7 @@ protocol HomeVCDelegate: AnyObject {
 protocol MiniPlayerControlViewDelegate: AnyObject {
     func handleExpandVideoPlayer()
     func handleDismissVideoPlayer()
+    func handleChangePlayStatus(play: Bool)
 }
 
 
@@ -34,4 +35,5 @@ protocol VideoPlayerViewDelegate: AnyObject {
     func handleMinimizeVideoPlayer()
     func handleMaximizeVideoPlayer()
     func handleUpdateSlideBar(with progress: Float)
+    func videoPlayStatusChanged(isPlaying: Bool)
 }
