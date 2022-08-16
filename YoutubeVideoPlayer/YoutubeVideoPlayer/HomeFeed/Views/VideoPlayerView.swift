@@ -57,14 +57,14 @@ class VideoPlayerView: UIView {
     fileprivate var playerLayer: AVPlayerLayer?
     
     
-    
     fileprivate lazy var playbackSlider: CustomSlider = {
         let slider = CustomSlider()
         slider.translatesAutoresizingMaskIntoConstraints = false
         slider.minimumTrackTintColor = .red
         slider.maximumTrackTintColor = UIColor(white: 0.5, alpha: 0.5)
         slider.thumbTintColor = .red
-        slider.setThumbImage( UIImage().withRenderingMode(.alwaysTemplate), for: .normal)
+//        slider.setThumbImage( UIImage().withRenderingMode(.alwaysTemplate), for: .normal)
+        slider.setThumbImage(#imageLiteral(resourceName: "thumb").withRenderingMode(.alwaysOriginal), for: .normal)
         slider.setThumbImage(#imageLiteral(resourceName: "thumb").withRenderingMode(.alwaysOriginal), for: .highlighted)
         slider.addTarget(self, action: #selector(handleSliderDragged), for: .valueChanged)
         return slider
@@ -77,17 +77,16 @@ class VideoPlayerView: UIView {
     fileprivate lazy var pausePlayButton = createButton(with: "pause.fill", imageSize: 30, targetSelector: #selector(didTapPausePlayButton))
     
     // [prev] button
-    fileprivate lazy var skipBackwardButton = createButton(with: "backward.end.fill", targetSelector: #selector(didTapSkipBackwardsButton))
+    fileprivate lazy var skipBackwardButton = createButton(with: "gobackward.5", targetSelector: #selector(didTapSkipBackwardsButton))
 
     
     // skip btn
-    fileprivate lazy var skipForwardButton = createButton(with: "forward.end.fill", targetSelector: #selector(didTapSkipForwardsButton))
+    fileprivate lazy var skipForwardButton = createButton(with: "goforward.5", targetSelector: #selector(didTapSkipForwardsButton))
 
     
     // time label
     fileprivate let elapsedTimeLabel: UILabel = {
         let label = UILabel()
-        label.text = "0:04 / 9:19"
         label.textColor = .white
         label.font = UIFont.boldSystemFont(ofSize: 12)
         label.alpha = 0
@@ -95,8 +94,6 @@ class VideoPlayerView: UIView {
     }()
     
     // close player btn
-    
-    
     fileprivate lazy var minimizeVideoPlayerBtn = createButton(with: "chevron.down", backgroundColor: .clear, targetSelector: #selector(didTapMinimizePlayerButton))
     
     
@@ -110,15 +107,12 @@ class VideoPlayerView: UIView {
         addSubview(thumbnailImageView)
         addSubview(playbackSlider)
         addSubview(elapsedTimeLabel)
-        
         thumbnailImageView.fillSuperview()
         
         let playbackSliderHeight: CGFloat = 10
-        playbackSlider.anchor(top: nil, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(top: 0, left: 0, bottom: 0, right: 0),  size: .init(width: 0, height: playbackSliderHeight))
-//        playbackSlider.backgroundColor = UIColor.black.withAlphaComponent(0.3)
+        playbackSlider.anchor(top: nil, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(top: 0, left: 0, bottom: -3, right: 0),  size: .init(width: 0, height: playbackSliderHeight))
         elapsedTimeLabel.constrainToLeft(paddingLeft: 15)
         elapsedTimeLabel.constrainToBottom(paddingBottom: -15)
-        
         setUpPlayBackControls()
     }
     
@@ -173,7 +167,7 @@ class VideoPlayerView: UIView {
         let imageName = "pause.fill"
         let image = createSfImage(with: imageName)
         pausePlayButton.setImage(image, for: .normal)
-        playbackSlider.setThumbImage( UIImage().withRenderingMode(.alwaysTemplate), for: .normal)
+//        playbackSlider.setThumbImage( UIImage().withRenderingMode(.alwaysTemplate), for: .normal)
 
         [pausePlayButton, skipBackwardButton, skipForwardButton, elapsedTimeLabel, fullScreenModeBtn, minimizeVideoPlayerBtn].forEach { view in
             view.alpha = 0
@@ -200,9 +194,7 @@ class VideoPlayerView: UIView {
     
     func configure(with image: UIImage?) {
         thumbnailImageView.image = image
-        videoURL = "https://player.vimeo.com/external/487508532.sd.mp4?s=dfb8c469317bd740e8beec7b0b0db0675cef880e&profile_id=164"
-
-//        "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+        videoURL = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
     }
     
     
@@ -343,11 +335,11 @@ extension VideoPlayerView {
             UIView.animate(withDuration: 0.4, delay: 0) {[weak view, weak self] in
                 guard let view = view else {return}
                 
-                if view.alpha == 0 {
-                    self?.playbackSlider.setThumbImage(#imageLiteral(resourceName: "thumb").withRenderingMode(.alwaysOriginal), for: .normal)
-                } else {
-                    self?.playbackSlider.setThumbImage( UIImage().withRenderingMode(.alwaysTemplate), for: .normal)
-                }
+//                if view.alpha == 0 {
+//                    self?.playbackSlider.setThumbImage(#imageLiteral(resourceName: "thumb").withRenderingMode(.alwaysOriginal), for: .normal)
+//                } else {
+//                    self?.playbackSlider.setThumbImage( UIImage().withRenderingMode(.alwaysTemplate), for: .normal)
+//                }
                 
                 view.alpha = view.alpha == 0 ? 1 : 0
                 
@@ -373,12 +365,18 @@ extension VideoPlayerView {
     
     
     @objc fileprivate func didTapSkipBackwardsButton() {
-        print("didTapSkipBackwardsButton")
+        guard let currentTime = player?.currentTime() else { return }
+        let currentTimeInSecondsMinus10 =  CMTimeGetSeconds(currentTime).advanced(by: -5)
+        let seekTime = CMTime(value: CMTimeValue(currentTimeInSecondsMinus10), timescale: 1)
+        player?.seek(to: seekTime)
     }
     
     
     @objc fileprivate func didTapSkipForwardsButton() {
-        print("didTapSkipForwardsButton")
+        guard let currentTime = player?.currentTime() else { return }
+        let currentTimeInSecondsPlus10 =  CMTimeGetSeconds(currentTime).advanced(by: 5)
+        let seekTime = CMTime(value: CMTimeValue(currentTimeInSecondsPlus10), timescale: 1)
+        player?.seek(to: seekTime)
     }
     
     
@@ -388,7 +386,6 @@ extension VideoPlayerView {
     
     
     @objc fileprivate func didTapMinimizePlayerButton() {
-        print("didTapMinimizePlayerButton")
         delegate?.handleMinimizeVideoPlayer()
     }
    
