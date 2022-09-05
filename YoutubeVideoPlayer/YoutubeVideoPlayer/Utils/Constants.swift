@@ -53,7 +53,7 @@ let HORIZONTAL_PADDING : CGFloat = 15
 
 //MARK: - Helper functions
 func computeImageViewHeight(withImage image: String) -> CGFloat {
-    let image = UIImage(named: image)!
+    let image = UIImage(named: image) ?? UIImage(systemName: "person")!
     let ratio = image.size.width / image.size.height
     let computedHeight = UIScreen.main.bounds.width / ratio
     return computedHeight
