@@ -104,7 +104,7 @@ struct Channel {
 
 
 
-enum HomeFeedDataType {
+enum HomeFeedDataType: Int, Decodable {
     case normalYoutubeVideos
     case shortsYoutubeVideos
 }

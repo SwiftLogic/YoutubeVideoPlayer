@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E968697728C6B2E700E0E323 /* videosData.json in Resources */ = {isa = PBXBuildFile; fileRef = E968697628C6B2E700E0E323 /* videosData.json */; };
 		E97BF1C5289AEBA1001EB220 /* VCPreviewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E97BF1C4289AEBA1001EB220 /* VCPreviewer.swift */; };
 		E9995F5B289EAFD200221973 /* MiniPlayerControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9995F5A289EAFD200221973 /* MiniPlayerControlView.swift */; };
 		E9995F5D289EB69500221973 /* VideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9995F5C289EB69500221973 /* VideoPlayerView.swift */; };
@@ -27,6 +28,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		E968697628C6B2E700E0E323 /* videosData.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = videosData.json; sourceTree = "<group>"; };
 		E97BF1C4289AEBA1001EB220 /* VCPreviewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VCPreviewer.swift; sourceTree = "<group>"; };
 		E9995F5A289EAFD200221973 /* MiniPlayerControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniPlayerControlView.swift; sourceTree = "<group>"; };
 		E9995F5C289EB69500221973 /* VideoPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayerView.swift; sourceTree = "<group>"; };
@@ -117,6 +119,22 @@
 			path = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		E981E5AE28C18A0000983A4D /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				E981E5AF28C2BF3500983A4D /* JSON */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		E981E5AF28C2BF3500983A4D /* JSON */ = {
+			isa = PBXGroup;
+			children = (
+				E968697628C6B2E700E0E323 /* videosData.json */,
+			);
+			path = JSON;
+			sourceTree = "<group>";
+		};
 		E9995F5E289F37C000221973 /* Assets & Launch & Info */ = {
 			isa = PBXGroup;
 			children = (
@@ -154,6 +172,7 @@
 		E9AE20A62891A98A00B87B23 /* YoutubeVideoPlayer */ = {
 			isa = PBXGroup;
 			children = (
+				E981E5AE28C18A0000983A4D /* Data */,
 				E9995F5E289F37C000221973 /* Assets & Launch & Info */,
 				E9117BB22892E00500473313 /* Supporting Files */,
 				E9117BB12892DFCD00473313 /* Utils */,
@@ -232,6 +251,7 @@
 			files = (
 				E9AE20B42891A98C00B87B23 /* LaunchScreen.storyboard in Resources */,
 				E9AE20B12891A98C00B87B23 /* Assets.xcassets in Resources */,
+				E968697728C6B2E700E0E323 /* videosData.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
