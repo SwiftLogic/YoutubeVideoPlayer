@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Combine
 class HomeVC: UICollectionViewController {
     
     //MARK: - Init
@@ -25,10 +26,13 @@ class HomeVC: UICollectionViewController {
         view.backgroundColor = APP_BACKGROUND_COLOR
         handleSetUpNavBar()
         setUpCollectionView()
+        fetchVideos()
     }
     
     
     //MARK: - Properties
+    fileprivate var anyCancellable: AnyCancellable?
+
     enum VideoPlayerMode: Int {
         case expanded, minimized
     }
@@ -72,6 +76,41 @@ class HomeVC: UICollectionViewController {
     }
 
 
+}
+
+
+
+//MARK: -  API Call
+extension HomeVC {
+    
+    fileprivate func fetchVideos() {
+        anyCancellable = NetworkingService.fetchVideos()
+            .sink { completion in
+                switch completion {
+                case .finished:
+                    print("finished promise")
+                    
+                case .failure(let error):
+                    print("error fetching promise: \(error)")
+                    
+                }
+            } receiveValue: { [weak self]data in
+                self?.parseVideos(from: data)
+                print("promise videosdata: \(data)")
+            }
+    }
+    
+    
+    fileprivate func parseVideos(from data: Data) {
+        let decoder = JSONDecoder()
+        do {
+            let videoList = try decoder.decode([HomeFeedDataModel].self, from: data)
+            print("firstVideoChannelName: ", videoList.first?.channel.channelName ?? "")
+            print("videosCount: ", videoList.count)
+        } catch let decoderError {
+            print("failed to decode videoList Data: ", decoderError)
+        }
+    }
     
 }
 

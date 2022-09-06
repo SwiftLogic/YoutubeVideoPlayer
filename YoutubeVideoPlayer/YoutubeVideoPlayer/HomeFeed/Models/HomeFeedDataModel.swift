@@ -6,7 +6,7 @@
 //
 
 import UIKit
-struct HomeFeedDataModel {
+struct HomeFeedDataModel: Decodable {
     
     let channel: Channel
     let videoThumbnailImageUrl: String
@@ -97,9 +97,14 @@ struct HomeFeedDataModel {
 
 
 
-struct Channel {
+struct Channel: Decodable {
     let channelName: String
     let channelImageUrl: String
+    
+    private enum CodingKeys: String, CodingKey {
+        case channelName = "name"
+        case channelImageUrl = "imageUrl"
+    }
 }
 
 

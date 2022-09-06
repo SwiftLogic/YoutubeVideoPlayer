@@ -25,6 +25,8 @@
 		E9AE20C82891C9BE00B87B23 /* PaddedlUILabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9AE20C72891C9BE00B87B23 /* PaddedlUILabel.swift */; };
 		E9AE20CA2891CB9E00B87B23 /* ShortsContainerViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9AE20C92891CB9E00B87B23 /* ShortsContainerViewCell.swift */; };
 		E9AE20CC2891CC2000B87B23 /* PreviewShortsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9AE20CB2891CC2000B87B23 /* PreviewShortsCell.swift */; };
+		E9C4A01628C7AED400466CDD /* MockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9C4A01528C7AED400466CDD /* MockData.swift */; };
+		E9C4A01828C7AFD500466CDD /* NetworkingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9C4A01728C7AFD500466CDD /* NetworkingService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,6 +50,8 @@
 		E9AE20C72891C9BE00B87B23 /* PaddedlUILabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaddedlUILabel.swift; sourceTree = "<group>"; };
 		E9AE20C92891CB9E00B87B23 /* ShortsContainerViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortsContainerViewCell.swift; sourceTree = "<group>"; };
 		E9AE20CB2891CC2000B87B23 /* PreviewShortsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewShortsCell.swift; sourceTree = "<group>"; };
+		E9C4A01528C7AED400466CDD /* MockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockData.swift; sourceTree = "<group>"; };
+		E9C4A01728C7AFD500466CDD /* NetworkingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkingService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -123,6 +127,8 @@
 			isa = PBXGroup;
 			children = (
 				E981E5AF28C2BF3500983A4D /* JSON */,
+				E9C4A01528C7AED400466CDD /* MockData.swift */,
+				E9C4A01728C7AFD500466CDD /* NetworkingService.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -275,7 +281,9 @@
 				E9AE20BD2891AAC300B87B23 /* MainTabbarVC.swift in Sources */,
 				E9AE20C12891B1AE00B87B23 /* Utils.swift in Sources */,
 				E97BF1C5289AEBA1001EB220 /* VCPreviewer.swift in Sources */,
+				E9C4A01628C7AED400466CDD /* MockData.swift in Sources */,
 				E9AE20CC2891CC2000B87B23 /* PreviewShortsCell.swift in Sources */,
+				E9C4A01828C7AFD500466CDD /* NetworkingService.swift in Sources */,
 				E9995F5D289EB69500221973 /* VideoPlayerView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
