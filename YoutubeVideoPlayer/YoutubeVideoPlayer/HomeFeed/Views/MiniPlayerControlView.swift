@@ -121,7 +121,7 @@ class MiniPlayerControlView: UIView {
     }
     
     //MARK: - Data Binding
-    func configure(with data: HomeFeedDataModel) {
+    func configure(with data: Video) {
         videoTitleLabel.text = data.videoTitle
         channelNameLabel.text = data.channel.channelName
     }

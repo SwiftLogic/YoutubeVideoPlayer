@@ -118,7 +118,7 @@ extension UIViewController {
             let imageView = UIImageView()
             imageView.contentMode = .scaleAspectFill
             imageView.clipsToBounds = true
-            imageView.image = UIImage(named: "image7")
+            imageView.fetchImage(from: AppConstant.profileImageUrl)
             let height: CGFloat = 28
             imageView.constrainHeight(constant: height)
             imageView.constrainWidth(constant: height)

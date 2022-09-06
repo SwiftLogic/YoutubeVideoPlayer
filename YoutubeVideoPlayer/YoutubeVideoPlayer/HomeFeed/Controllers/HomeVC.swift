@@ -62,7 +62,9 @@ class HomeVC: UICollectionViewController {
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
     }
-    fileprivate var posts : [HomeFeedDataModel] = []
+    
+    
+    fileprivate var videosList : [Video] = []
     
     
     
@@ -72,7 +74,6 @@ class HomeVC: UICollectionViewController {
         collectionView.register(ShortsContainerViewCell.self, forCellWithReuseIdentifier: ShortsContainerViewCell.cellReuseIdentifier)
         collectionView.backgroundColor = APP_BACKGROUND_COLOR
         collectionView.contentInset = .init(top: 8, left: 0, bottom: 0, right: 0)
-        posts = HomeFeedDataModel.getMockData()
     }
 
 
@@ -85,18 +86,15 @@ extension HomeVC {
     
     fileprivate func fetchVideos() {
         anyCancellable = NetworkingService.fetchVideos()
+            .receive(on: DispatchQueue.main)
             .sink { completion in
                 switch completion {
-                case .finished:
-                    print("finished promise")
-                    
+                case .finished:()
                 case .failure(let error):
                     print("error fetching promise: \(error)")
-                    
                 }
             } receiveValue: { [weak self]data in
                 self?.parseVideos(from: data)
-                print("promise videosdata: \(data)")
             }
     }
     
@@ -104,9 +102,9 @@ extension HomeVC {
     fileprivate func parseVideos(from data: Data) {
         let decoder = JSONDecoder()
         do {
-            let videoList = try decoder.decode([HomeFeedDataModel].self, from: data)
-            print("firstVideoChannelName: ", videoList.first?.channel.channelName ?? "")
-            print("videosCount: ", videoList.count)
+            let videos = try decoder.decode([Video].self, from: data)
+            self.videosList = videos
+            self.collectionView.reloadData()
         } catch let decoderError {
             print("failed to decode videoList Data: ", decoderError)
         }
@@ -119,15 +117,15 @@ extension HomeVC {
 extension HomeVC: UICollectionViewDelegateFlowLayout {
 
     
-    fileprivate func setUpCells(with post: HomeFeedDataModel, indexPath: IndexPath) -> UICollectionViewCell {
+    fileprivate func setUpCells(with post: Video, indexPath: IndexPath) -> UICollectionViewCell {
         
         switch post.type {
         
         case .normalYoutubeVideos:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeFeedCell.cellReuseIdentifier, for: indexPath) as! HomeFeedCell
-            let post = posts[indexPath.item]
+            let post = videosList[indexPath.item]
             cell.configure(with: post)
-            let newHeight = computeImageViewHeight(withImage: posts[indexPath.item].videoThumbnailImageUrl)
+            let newHeight = computeImageViewHeight(withImage: videosList[indexPath.item].videoThumbnailImageUrl)
             cell.thumbnailHeightConstraint.constant = newHeight
             cell.layoutIfNeeded()
             return cell
@@ -143,14 +141,14 @@ extension HomeVC: UICollectionViewDelegateFlowLayout {
     
   
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        return setUpCells(with: posts[indexPath.item], indexPath: indexPath)
+        return setUpCells(with: videosList[indexPath.item], indexPath: indexPath)
     }
     
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
-        let dataType = posts[indexPath.item].type
-        let imageName = posts[indexPath.item].videoThumbnailImageUrl
+        let dataType = videosList[indexPath.item].type
+        let imageName = videosList[indexPath.item].videoThumbnailImageUrl
         
         switch dataType {
         
@@ -169,12 +167,12 @@ extension HomeVC: UICollectionViewDelegateFlowLayout {
     
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return posts.count
+        return videosList.count
     }
     
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let homeFeedData = posts[indexPath.item]
+        let homeFeedData = videosList[indexPath.item]
         delegate?.handleOpenVideoPlayer(for: homeFeedData)
     }
     

@@ -107,25 +107,50 @@ class HomeFeedCell: UICollectionViewCell {
         videoDurationLabel.bottomAnchor.constraint(equalTo: thumbnailImageView.bottomAnchor, constant: -8).isActive = true
         videoDurationLabel.trailingAnchor.constraint(equalTo: thumbnailImageView.trailingAnchor, constant: -8).isActive = true
         
+        
     }
     
     
     
     // data binding
-    func configure(with homeFeedDataModel: HomeFeedDataModel) {
-        thumbnailImageView.image = UIImage(named: homeFeedDataModel.videoThumbnailImageUrl)
-        channelImageView.image = UIImage(named: homeFeedDataModel.channel.channelImageUrl)
-        videoTitleLabel.text = homeFeedDataModel.videoTitle
-        videoDurationLabel.text = homeFeedDataModel.videoDuration
-        let creationDate = homeFeedDataModel.creationDate
-        let channelName = homeFeedDataModel.channel.channelName
-        let views = Int.random(in: 100..<800)
-        channelNameLabel.text = "\(channelName) • \(views)K views • \(creationDate)"
+    func configure(with video: Video) {
+        thumbnailImageView.fetchImage(from: video.videoThumbnailImageUrl)
+        channelImageView.fetchImage(from: video.channel.channelImageUrl)
+        videoTitleLabel.text = video.videoTitle
+        videoDurationLabel.text = video.videoDuration
+        let creationDate = video.creationDate
+        
+        let channelNameLimit = 18
+        let channelName = video.channel.channelName.count > channelNameLimit ? String(video.channel.channelName.prefix(channelNameLimit)) : video.channel.channelName
+        
+        let views = video.views
+        channelNameLabel.text = "\(channelName) • \(views) • \(creationDate)"
     }
     
     
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+}
+
+
+
+extension UIImageView {
+    
+    func fetchImage(from urlString: String) {
+        guard let url = URL(string: urlString) else {return}
+        
+        DispatchQueue.global(qos: .background).async {
+            URLSession.shared.dataTask(with: url) { data, response, error in
+                guard error == nil, let data = data else {return}
+                
+                let fetchedImage = UIImage(data: data)
+                DispatchQueue.main.async {
+                    self.image = fetchedImage
+                }
+            }.resume()
+            
+        }
     }
 }

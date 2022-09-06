@@ -245,11 +245,11 @@ class MainTabbarVC: UITabBarController {
 //MARK: - HomeVCDelegate
 extension MainTabbarVC: HomeVCDelegate {
     
-    func handleOpenVideoPlayer(for homeFeedData: HomeFeedDataModel) {
+    func handleOpenVideoPlayer(for video: Video) {
         // data binding
-        miniPlayerControlView.configure(with: homeFeedData)
-        let imageName = homeFeedData.videoThumbnailImageUrl
-        videoPlayerView.configure(with: UIImage(named: imageName))
+        miniPlayerControlView.configure(with: video)
+        let imageUrl = video.videoThumbnailImageUrl
+        videoPlayerView.configure(with: imageUrl, videoUrlString: video.videoUrl)
         expandVideoPlayer()
     }
     
