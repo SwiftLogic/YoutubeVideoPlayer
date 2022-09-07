@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		E914D1DD28C7EB660046E62E /* AppConstant.swift in Sources */ = {isa = PBXBuildFile; fileRef = E914D1DC28C7EB660046E62E /* AppConstant.swift */; };
+		E914D1DF28C822020046E62E /* CacheableImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E914D1DE28C822020046E62E /* CacheableImageView.swift */; };
 		E968697728C6B2E700E0E323 /* videosData.json in Resources */ = {isa = PBXBuildFile; fileRef = E968697628C6B2E700E0E323 /* videosData.json */; };
 		E97BF1C5289AEBA1001EB220 /* VCPreviewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E97BF1C4289AEBA1001EB220 /* VCPreviewer.swift */; };
 		E9995F5B289EAFD200221973 /* MiniPlayerControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9995F5A289EAFD200221973 /* MiniPlayerControlView.swift */; };
@@ -32,6 +33,7 @@
 
 /* Begin PBXFileReference section */
 		E914D1DC28C7EB660046E62E /* AppConstant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConstant.swift; sourceTree = "<group>"; };
+		E914D1DE28C822020046E62E /* CacheableImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheableImageView.swift; sourceTree = "<group>"; };
 		E968697628C6B2E700E0E323 /* videosData.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = videosData.json; sourceTree = "<group>"; };
 		E97BF1C4289AEBA1001EB220 /* VCPreviewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VCPreviewer.swift; sourceTree = "<group>"; };
 		E9995F5A289EAFD200221973 /* MiniPlayerControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniPlayerControlView.swift; sourceTree = "<group>"; };
@@ -196,6 +198,7 @@
 			isa = PBXGroup;
 			children = (
 				E9AE20C72891C9BE00B87B23 /* PaddedlUILabel.swift */,
+				E914D1DE28C822020046E62E /* CacheableImageView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -286,6 +289,7 @@
 				E9AE20C12891B1AE00B87B23 /* Utils.swift in Sources */,
 				E97BF1C5289AEBA1001EB220 /* VCPreviewer.swift in Sources */,
 				E9C4A01628C7AED400466CDD /* MockData.swift in Sources */,
+				E914D1DF28C822020046E62E /* CacheableImageView.swift in Sources */,
 				E9AE20CC2891CC2000B87B23 /* PreviewShortsCell.swift in Sources */,
 				E9C4A01828C7AFD500466CDD /* NetworkingService.swift in Sources */,
 				E9995F5D289EB69500221973 /* VideoPlayerView.swift in Sources */,

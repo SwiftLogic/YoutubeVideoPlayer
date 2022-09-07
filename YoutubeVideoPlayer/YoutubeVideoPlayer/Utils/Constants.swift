@@ -114,11 +114,11 @@ extension UIViewController {
     func handleSetUpNavBar() {
         handleHide_ShowNavLine(navController: navigationController, showLine: false)
 
-        let profileImageView: UIImageView = {
-            let imageView = UIImageView()
+        let profileImageView: CacheableImageView = {
+            let imageView = CacheableImageView()
             imageView.contentMode = .scaleAspectFill
             imageView.clipsToBounds = true
-            imageView.fetchImage(from: AppConstant.profileImageUrl)
+            imageView.getImage(for: AppConstant.profileImageUrl)
             let height: CGFloat = 28
             imageView.constrainHeight(constant: height)
             imageView.constrainWidth(constant: height)

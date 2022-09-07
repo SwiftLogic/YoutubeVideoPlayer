@@ -23,16 +23,16 @@ class HomeFeedCell: UICollectionViewCell {
     static let cellReuseIdentifier = String(describing: HomeFeedCell.self)
 
     var thumbnailHeightConstraint: NSLayoutConstraint = NSLayoutConstraint()
-    fileprivate let thumbnailImageView: UIImageView = {
-        let imageView = UIImageView()
+    fileprivate let thumbnailImageView: CacheableImageView = {
+        let imageView = CacheableImageView()
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
     
     fileprivate let channelImageViewDimen: CGFloat = 35
-    fileprivate lazy var channelImageView: UIImageView = {
-        let imageView = UIImageView()
+    fileprivate lazy var channelImageView: CacheableImageView = {
+        let imageView = CacheableImageView()
         imageView.backgroundColor = APP_BACKGROUND_COLOR
         imageView.clipsToBounds = true
         imageView.layer.cornerRadius = channelImageViewDimen / 2
@@ -114,8 +114,8 @@ class HomeFeedCell: UICollectionViewCell {
     
     // data binding
     func configure(with video: Video) {
-        thumbnailImageView.fetchImage(from: video.videoThumbnailImageUrl)
-        channelImageView.fetchImage(from: video.channel.channelImageUrl)
+        thumbnailImageView.getImage(for: video.videoThumbnailImageUrl)
+        channelImageView.getImage(for: video.channel.channelImageUrl)
         videoTitleLabel.text = video.videoTitle
         videoDurationLabel.text = video.videoDuration
         let creationDate = video.creationDate
@@ -135,22 +135,3 @@ class HomeFeedCell: UICollectionViewCell {
 }
 
 
-
-extension UIImageView {
-    
-    func fetchImage(from urlString: String) {
-        guard let url = URL(string: urlString) else {return}
-        
-        DispatchQueue.global(qos: .background).async {
-            URLSession.shared.dataTask(with: url) { data, response, error in
-                guard error == nil, let data = data else {return}
-                
-                let fetchedImage = UIImage(data: data)
-                DispatchQueue.main.async {
-                    self.image = fetchedImage
-                }
-            }.resume()
-            
-        }
-    }
-}

@@ -44,8 +44,8 @@ class VideoPlayerView: UIView {
     
     
     
-    fileprivate let thumbnailImageView: UIImageView = {
-        let view = UIImageView()
+    fileprivate let thumbnailImageView: CacheableImageView = {
+        let view = CacheableImageView()
         view.clipsToBounds = true
         view.contentMode = .scaleAspectFill
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -193,7 +193,7 @@ class VideoPlayerView: UIView {
     
     
     func configure(with imageUrl: String, videoUrlString: String) {
-        thumbnailImageView.fetchImage(from: imageUrl)
+        thumbnailImageView.getImage(for: imageUrl)
         videoURL = AppConstant.mockVideoUrlStrings.randomElement() ?? ""//videoUrlString
     }
     
