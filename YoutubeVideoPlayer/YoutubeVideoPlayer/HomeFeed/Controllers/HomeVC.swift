@@ -117,17 +117,14 @@ extension HomeVC {
 extension HomeVC: UICollectionViewDelegateFlowLayout {
 
     
-    fileprivate func setUpCells(with post: Video, indexPath: IndexPath) -> UICollectionViewCell {
+    fileprivate func setUpCells(with video: Video, indexPath: IndexPath) -> UICollectionViewCell {
         
-        switch post.type {
+        switch video.type {
         
         case .normalYoutubeVideos:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeFeedCell.cellReuseIdentifier, for: indexPath) as! HomeFeedCell
             let post = videosList[indexPath.item]
             cell.configure(with: post)
-            let newHeight = computeImageViewHeight(withImage: videosList[indexPath.item].videoThumbnailImageUrl)
-            cell.thumbnailHeightConstraint.constant = newHeight
-            cell.layoutIfNeeded()
             return cell
             
         case .shortsYoutubeVideos:
@@ -148,13 +145,9 @@ extension HomeVC: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
         let dataType = videosList[indexPath.item].type
-        let imageName = videosList[indexPath.item].videoThumbnailImageUrl
-        
         switch dataType {
-        
         case .normalYoutubeVideos:
-                   
-            var newHeight = computeImageViewHeight(withImage: imageName)
+            var newHeight = AppConstant.thumbnailImageHeight
             newHeight += 35 + 8
             newHeight += 30
             return .init(width: view.frame.width, height: newHeight)

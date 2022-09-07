@@ -22,11 +22,10 @@ class HomeFeedCell: UICollectionViewCell {
     //MARK: - Properties
     static let cellReuseIdentifier = String(describing: HomeFeedCell.self)
 
-    var thumbnailHeightConstraint: NSLayoutConstraint = NSLayoutConstraint()
     fileprivate let thumbnailImageView: CacheableImageView = {
         let imageView = CacheableImageView()
         imageView.clipsToBounds = true
-        imageView.contentMode = .scaleAspectFit
+        imageView.contentMode = .scaleAspectFill
         return imageView
     }()
     
@@ -92,8 +91,7 @@ class HomeFeedCell: UICollectionViewCell {
         
         
         thumbnailImageView.anchor(top: topAnchor, leading: leadingAnchor, bottom: nil, trailing: trailingAnchor)
-        thumbnailHeightConstraint = thumbnailImageView.heightAnchor.constraint(equalToConstant: 0)
-        thumbnailHeightConstraint.isActive = true
+        thumbnailImageView.constrainHeight(constant: AppConstant.thumbnailImageHeight)
         thumbnailImageView.constrainWidth(constant: frame.width)
 
         
@@ -107,23 +105,22 @@ class HomeFeedCell: UICollectionViewCell {
         videoDurationLabel.bottomAnchor.constraint(equalTo: thumbnailImageView.bottomAnchor, constant: -8).isActive = true
         videoDurationLabel.trailingAnchor.constraint(equalTo: thumbnailImageView.trailingAnchor, constant: -8).isActive = true
         
-        
     }
     
     
     
     // data binding
     func configure(with video: Video) {
-        thumbnailImageView.getImage(for: video.videoThumbnailImageUrl)
-        channelImageView.getImage(for: video.channel.channelImageUrl)
+        thumbnailImageView.getImage(for: video.thumbnailImageUrlUnwrapped)
+        channelImageView.getImage(for: video.channelUnwrapped.channelImageUrl)
         videoTitleLabel.text = video.videoTitle
-        videoDurationLabel.text = video.videoDuration
-        let creationDate = video.creationDate
+        videoDurationLabel.text = video.videoDurationUnwrapped
+        let creationDate = video.creationDateUnwrapped
         
         let channelNameLimit = 18
-        let channelName = video.channel.channelName.count > channelNameLimit ? String(video.channel.channelName.prefix(channelNameLimit)) : video.channel.channelName
+        let channelName = video.channelUnwrapped.channelName.count > channelNameLimit ? String(video.channelUnwrapped.channelName.prefix(channelNameLimit)) : video.channelUnwrapped.channelName
         
-        let views = video.views
+        let views = video.viewsUnwrapped
         channelNameLabel.text = "\(channelName) • \(views) • \(creationDate)"
     }
     

@@ -123,7 +123,7 @@ class MiniPlayerControlView: UIView {
     //MARK: - Data Binding
     func configure(with data: Video) {
         videoTitleLabel.text = data.videoTitle
-        channelNameLabel.text = data.channel.channelName
+        channelNameLabel.text = data.channelUnwrapped.channelName
     }
     
     

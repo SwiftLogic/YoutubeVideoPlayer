@@ -8,18 +8,48 @@
 import UIKit
 struct Video: Decodable {
     
-    let channel: Channel
-    let videoUrl: String
-    let videoThumbnailImageUrl: String
-    let videoTitle: String
-    let videoDuration: String
-    let creationDate: String
-    let views: String
+    var channel: Channel?
+    var videoUrl: String?
+    let videoThumbnailImageUrl: String?
+    let videoTitle: String?
+    var videoDuration: String?
+    var creationDate: String?
+    let views: String?
     let type: HomeFeedDataType
+    var shorts: [YoutubeShort]?
     
     
-   
+    var channelUnwrapped: Channel {
+        return channel ?? .init(channelName: "", channelImageUrl: "")
+    }
+    
+    var videoUrlUnwrapped: String {
+        return videoUrl ?? ""
+    }
+       
+    
+    var thumbnailImageUrlUnwrapped: String {
+        return videoThumbnailImageUrl ?? ""
+    }
+    
+    
+    var videoTitleUnwrapped: String {
+        return videoTitle ?? ""
+    }
+    
+    var videoDurationUnwrapped: String {
+        return videoDuration ?? ""
+    }
+    
         
+    var creationDateUnwrapped: String {
+        return creationDate ?? ""
+    }
+    
+    var viewsUnwrapped: String {
+        return views ?? ""
+    }
+    
 }
 
 
@@ -39,6 +69,11 @@ struct Channel: Decodable {
 enum HomeFeedDataType: Int, Decodable {
     case normalYoutubeVideos
     case shortsYoutubeVideos
+}
+
+
+struct YoutubeShort: Decodable {
+    var title, imageUrl, views: String
 }
 
 
@@ -65,3 +100,12 @@ struct ContentTableViewCellViewModel {
         }
     }
 }
+
+
+
+
+//
+//"shorts": ["https://i.ytimg.com/vi/ohRO9Cwu_vg/mqdefault.jpg"],
+//"videoTitle": "When She Says, I have a Boyfriend",
+//"views": "258K views",
+//"type": 1

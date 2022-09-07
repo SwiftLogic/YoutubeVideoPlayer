@@ -7,6 +7,9 @@
 
 import Foundation
 enum AppConstant {
+    
+    static let thumbnailImageHeight = 210.0//9375
+    
     static let profileImageUrl = "https://yt3.ggpht.com/ytc/AMLnZu_5QhSDxdZbuTEiDSTO4oY8l8Q2-fvc0aRh6fcFRA=s88-c-k-c0x00ffffff-no-rj"
     
     static let mockVideoUrlStrings = [

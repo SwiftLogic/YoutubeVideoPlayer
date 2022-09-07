@@ -248,8 +248,9 @@ extension MainTabbarVC: HomeVCDelegate {
     func handleOpenVideoPlayer(for video: Video) {
         // data binding
         miniPlayerControlView.configure(with: video)
-        let imageUrl = video.videoThumbnailImageUrl
-        videoPlayerView.configure(with: imageUrl, videoUrlString: video.videoUrl)
+        let imageUrl = video.thumbnailImageUrlUnwrapped
+        guard let videoUrlString = video.videoUrl else {return}
+        videoPlayerView.configure(with: imageUrl, videoUrlString: videoUrlString)
         expandVideoPlayer()
     }
     
