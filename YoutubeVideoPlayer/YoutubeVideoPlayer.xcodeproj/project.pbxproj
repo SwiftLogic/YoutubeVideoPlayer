@@ -14,6 +14,8 @@
 		E9995F5B289EAFD200221973 /* MiniPlayerControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9995F5A289EAFD200221973 /* MiniPlayerControlView.swift */; };
 		E9995F5D289EB69500221973 /* VideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9995F5C289EB69500221973 /* VideoPlayerView.swift */; };
 		E9995F61289F388800221973 /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9995F60289F388800221973 /* Protocols.swift */; };
+		E9AA899F28C9344900C3B2CD /* CommunityPostCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9AA899E28C9344900C3B2CD /* CommunityPostCell.swift */; };
+		E9AA89A128C93D0A00C3B2CD /* ViewPreviewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9AA89A028C93D0A00C3B2CD /* ViewPreviewer.swift */; };
 		E9AE20A82891A98A00B87B23 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9AE20A72891A98A00B87B23 /* AppDelegate.swift */; };
 		E9AE20AA2891A98A00B87B23 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9AE20A92891A98A00B87B23 /* SceneDelegate.swift */; };
 		E9AE20AC2891A98A00B87B23 /* HomeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9AE20AB2891A98A00B87B23 /* HomeVC.swift */; };
@@ -39,6 +41,8 @@
 		E9995F5A289EAFD200221973 /* MiniPlayerControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniPlayerControlView.swift; sourceTree = "<group>"; };
 		E9995F5C289EB69500221973 /* VideoPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayerView.swift; sourceTree = "<group>"; };
 		E9995F60289F388800221973 /* Protocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocols.swift; sourceTree = "<group>"; };
+		E9AA899E28C9344900C3B2CD /* CommunityPostCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityPostCell.swift; sourceTree = "<group>"; };
+		E9AA89A028C93D0A00C3B2CD /* ViewPreviewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewPreviewer.swift; sourceTree = "<group>"; };
 		E9AE20A42891A98A00B87B23 /* YoutubeVideoPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YoutubeVideoPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9AE20A72891A98A00B87B23 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E9AE20A92891A98A00B87B23 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -95,6 +99,7 @@
 				E9AE20CB2891CC2000B87B23 /* PreviewShortsCell.swift */,
 				E9995F5A289EAFD200221973 /* MiniPlayerControlView.swift */,
 				E9995F5C289EB69500221973 /* VideoPlayerView.swift */,
+				E9AA899E28C9344900C3B2CD /* CommunityPostCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -114,6 +119,7 @@
 				E9AE20C02891B1AE00B87B23 /* Utils.swift */,
 				E97BF1C4289AEBA1001EB220 /* VCPreviewer.swift */,
 				E914D1DC28C7EB660046E62E /* AppConstant.swift */,
+				E9AA89A028C93D0A00C3B2CD /* ViewPreviewer.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -279,10 +285,12 @@
 				E9AE20BF2891B05400B87B23 /* Constants.swift in Sources */,
 				E9AE20AC2891A98A00B87B23 /* HomeVC.swift in Sources */,
 				E9995F5B289EAFD200221973 /* MiniPlayerControlView.swift in Sources */,
+				E9AA89A128C93D0A00C3B2CD /* ViewPreviewer.swift in Sources */,
 				E9AE20C52891C95100B87B23 /* HomeFeedCell.swift in Sources */,
 				E9AE20C32891C58300B87B23 /* Video.swift in Sources */,
 				E9AE20CA2891CB9E00B87B23 /* ShortsContainerViewCell.swift in Sources */,
 				E9AE20A82891A98A00B87B23 /* AppDelegate.swift in Sources */,
+				E9AA899F28C9344900C3B2CD /* CommunityPostCell.swift in Sources */,
 				E914D1DD28C7EB660046E62E /* AppConstant.swift in Sources */,
 				E9AE20AA2891A98A00B87B23 /* SceneDelegate.swift in Sources */,
 				E9AE20BD2891AAC300B87B23 /* MainTabbarVC.swift in Sources */,

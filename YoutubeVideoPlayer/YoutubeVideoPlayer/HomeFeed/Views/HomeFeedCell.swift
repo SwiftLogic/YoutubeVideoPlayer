@@ -87,6 +87,8 @@ class HomeFeedCell: UICollectionViewCell {
         addSubview(channelImageView)
         addSubview(videoTitleLabel)
         addSubview(channelNameLabel)
+        addSubview(optionsButton)
+
         thumbnailImageView.addSubview(videoDurationLabel)
         
         
@@ -95,15 +97,25 @@ class HomeFeedCell: UICollectionViewCell {
         thumbnailImageView.constrainWidth(constant: frame.width)
 
         
-        channelImageView.anchor(top: thumbnailImageView.bottomAnchor, leading: leadingAnchor, bottom: nil, trailing: nil, padding: .init(top: 8, left: 8, bottom: 0, right: 0), size: .init(width: channelImageViewDimen, height: channelImageViewDimen))
+        
+        
+        channelImageView.anchor(top: thumbnailImageView.bottomAnchor, leading: leadingAnchor, bottom: nil, trailing: nil, padding: .init(top: 10, left: 8, bottom: 0, right: 0), size: .init(width: channelImageViewDimen, height: channelImageViewDimen))
 
-        videoTitleLabel.anchor(top: channelImageView.topAnchor, leading: channelImageView.trailingAnchor, bottom: nil, trailing: trailingAnchor, padding: .init(top: 0, left: 5, bottom: 0, right: 5))
+        videoTitleLabel.anchor(top: channelImageView.topAnchor, leading: channelImageView.trailingAnchor, bottom: nil, trailing: optionsButton.leadingAnchor, padding: .init(top: 0, left: 5, bottom: 0, right: 0))
 
         channelNameLabel.anchor(top: videoTitleLabel.bottomAnchor, leading: videoTitleLabel.leadingAnchor, bottom: nil, trailing: videoTitleLabel.trailingAnchor)
 
+        
+        optionsButton.topAnchor.constraint(equalTo: videoTitleLabel.topAnchor, constant: 0).isActive = true
+        optionsButton.constrainToRight(paddingRight: 0)
+        optionsButton.constrainWidth(constant: 20)
+        
 
         videoDurationLabel.bottomAnchor.constraint(equalTo: thumbnailImageView.bottomAnchor, constant: -8).isActive = true
         videoDurationLabel.trailingAnchor.constraint(equalTo: thumbnailImageView.trailingAnchor, constant: -8).isActive = true
+        
+        
+       
         
     }
     

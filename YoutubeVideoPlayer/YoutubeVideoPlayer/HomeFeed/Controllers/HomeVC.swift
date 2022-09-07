@@ -72,8 +72,8 @@ class HomeVC: UICollectionViewController {
     fileprivate func setUpCollectionView() {
         collectionView.register(HomeFeedCell.self, forCellWithReuseIdentifier: HomeFeedCell.cellReuseIdentifier)
         collectionView.register(ShortsContainerViewCell.self, forCellWithReuseIdentifier: ShortsContainerViewCell.cellReuseIdentifier)
-        collectionView.backgroundColor = APP_BACKGROUND_COLOR
-        collectionView.contentInset = .init(top: 8, left: 0, bottom: 0, right: 0)
+        collectionView.backgroundColor = UIColor.rgb(red: 55, green: 55, blue: 55)
+//        collectionView.contentInset = .init(top: 8, left: 0, bottom: 0, right: 0)
     }
 
 
@@ -151,7 +151,7 @@ extension HomeVC: UICollectionViewDelegateFlowLayout {
         case .normalYoutubeVideos:
             var newHeight = AppConstant.thumbnailImageHeight
             newHeight += 35 + 8
-            newHeight += 30
+            newHeight += 35//30
             return .init(width: view.frame.width, height: newHeight)
             
         case .shortsYoutubeVideos:
@@ -169,6 +169,12 @@ extension HomeVC: UICollectionViewDelegateFlowLayout {
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let homeFeedData = videosList[indexPath.item]
         delegate?.handleOpenVideoPlayer(for: homeFeedData)
+    }
+    
+    
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 5
     }
     
 }

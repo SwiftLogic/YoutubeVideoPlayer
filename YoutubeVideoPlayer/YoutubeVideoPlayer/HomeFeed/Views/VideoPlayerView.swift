@@ -424,8 +424,8 @@ extension AVPlayer {
 }
 
 
-func createSfImage(with systemName: String) -> UIImage {
-    let config = UIImage.SymbolConfiguration(pointSize: 30, weight: .regular, scale: .medium)
+func createSfImage(with systemName: String, pointSize: CGFloat = 30) -> UIImage {
+    let config = UIImage.SymbolConfiguration(pointSize: pointSize, weight: .regular, scale: .medium)
     let image = UIImage(systemName: systemName, withConfiguration:
                             config)?.withRenderingMode(.alwaysTemplate)
     return image ?? UIImage()

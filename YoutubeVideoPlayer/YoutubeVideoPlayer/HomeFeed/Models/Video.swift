@@ -69,6 +69,8 @@ struct Channel: Decodable {
 enum HomeFeedDataType: Int, Decodable {
     case normalYoutubeVideos
     case shortsYoutubeVideos
+//    case stories
+//    case communityPost
 }
 
 
