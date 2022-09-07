@@ -20,8 +20,8 @@ class PreviewShortsCell: UICollectionViewCell {
     //MARK: - Properties
     static let cellReuseIdentifier = String(describing: PreviewShortsCell.self)
 
-    fileprivate let thumbnailImageView: UIImageView = {
-        let imageView = UIImageView()
+    fileprivate let thumbnailImageView: CacheableImageView = {
+        let imageView = CacheableImageView()
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFill
         imageView.alpha = 0.75
@@ -31,7 +31,6 @@ class PreviewShortsCell: UICollectionViewCell {
     
     fileprivate let videoTitleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Our New Rifles & Eating Popeye's New Chicken Sandwich"
         label.textColor = .white
         label.numberOfLines = 3
         label.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
@@ -40,7 +39,6 @@ class PreviewShortsCell: UICollectionViewCell {
     
     fileprivate let viewsLabel: UILabel = {
         let label = UILabel()
-        label.text = "931K views"
         label.textColor = .white
         label.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
         return label
@@ -68,13 +66,19 @@ class PreviewShortsCell: UICollectionViewCell {
     }
     
     
-    
-    // data binding
-    func configure(with imageName: String) {
-        thumbnailImageView.image = UIImage(named: imageName)
+
+    func bind(short: YoutubeShort) {
+        thumbnailImageView.getImage(for: short.imageUrl)
+        videoTitleLabel.text = short.title
+        viewsLabel.text = short.views
     }
     
     
+    //MARK: - Overriden
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        thumbnailImageView.setPlaceHolderImage()
+    }
     
     
     required init?(coder aDecoder: NSCoder) {

@@ -123,12 +123,14 @@ extension HomeVC: UICollectionViewDelegateFlowLayout {
         
         case .normalYoutubeVideos:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeFeedCell.cellReuseIdentifier, for: indexPath) as! HomeFeedCell
-            let post = videosList[indexPath.item]
-            cell.configure(with: post)
+            let content = videosList[indexPath.item]
+            cell.configure(with: content)
             return cell
             
         case .shortsYoutubeVideos:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ShortsContainerViewCell.cellReuseIdentifier, for: indexPath) as! ShortsContainerViewCell
+            let content = videosList[indexPath.item]
+            cell.bind(shorts: content.shorts ?? [])
             return cell
             
         }

@@ -22,7 +22,7 @@ class ShortsContainerViewCell: UICollectionViewCell {
     //MARK: - Properties
     static let cellReuseIdentifier = String(describing: ShortsContainerViewCell.self)
 
-   fileprivate let imageNames = (2...13).map{"image\($0)"}.shuffled()
+    fileprivate var shorts: [YoutubeShort] = []
 
     fileprivate let shortsTextLabel: UILabel = {
         let label = UILabel()
@@ -100,6 +100,10 @@ class ShortsContainerViewCell: UICollectionViewCell {
     }
     
     
+    func bind(shorts: [YoutubeShort]) {
+        self.shorts = shorts
+        collectionView.reloadData()
+    }
     
     
     
@@ -115,8 +119,8 @@ extension ShortsContainerViewCell: UICollectionViewDelegate, UICollectionViewDat
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PreviewShortsCell.cellReuseIdentifier, for: indexPath) as! PreviewShortsCell
-        let imageName = imageNames[indexPath.item]
-        cell.configure(with: imageName)
+        let short = shorts[indexPath.item]
+        cell.bind(short: short)
         return cell
     }
     
@@ -127,6 +131,9 @@ extension ShortsContainerViewCell: UICollectionViewDelegate, UICollectionViewDat
     
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return imageNames.count
+        return shorts.count
     }
+    
+    
+    
 }
