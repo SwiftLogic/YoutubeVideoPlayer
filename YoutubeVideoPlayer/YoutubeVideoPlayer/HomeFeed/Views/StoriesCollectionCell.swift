@@ -93,6 +93,7 @@ extension StoriesCollectionCell: UICollectionViewDelegate, UICollectionViewDataS
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PreviewStoryCell.cellReuseIdentifier, for: indexPath) as! PreviewStoryCell
+        cell.story = stories[indexPath.item]
         return cell
     }
     
