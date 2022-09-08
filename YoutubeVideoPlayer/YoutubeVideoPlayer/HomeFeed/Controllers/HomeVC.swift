@@ -72,6 +72,8 @@ class HomeVC: UICollectionViewController {
     fileprivate func setUpCollectionView() {
         collectionView.register(HomeFeedCell.self, forCellWithReuseIdentifier: HomeFeedCell.cellReuseIdentifier)
         collectionView.register(ShortsContainerViewCell.self, forCellWithReuseIdentifier: ShortsContainerViewCell.cellReuseIdentifier)
+        collectionView.register(CommunityPostCell.self, forCellWithReuseIdentifier: CommunityPostCell.cellReuseIdentifier)
+
         collectionView.backgroundColor = UIColor.rgb(red: 55, green: 55, blue: 55)
 //        collectionView.contentInset = .init(top: 8, left: 0, bottom: 0, right: 0)
     }
@@ -133,6 +135,15 @@ extension HomeVC: UICollectionViewDelegateFlowLayout {
             cell.bind(shorts: content.shorts ?? [])
             return cell
             
+        case .communityPost:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CommunityPostCell.cellReuseIdentifier, for: indexPath) as! CommunityPostCell
+            let content = videosList[indexPath.item]
+            let imageHeight = content.post?.imageHeight ?? 0
+            cell.thumbnailHeightConstraint.constant = imageHeight
+            cell.layoutIfNeeded()
+            cell.post = content.post
+            return cell
+            
         }
         
     }
@@ -145,9 +156,9 @@ extension HomeVC: UICollectionViewDelegateFlowLayout {
     
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        
-        let dataType = videosList[indexPath.item].type
-        switch dataType {
+        let content = videosList[indexPath.item]
+
+        switch content.type {
         case .normalYoutubeVideos:
             var newHeight = AppConstant.thumbnailImageHeight
             newHeight += 35 + 8
@@ -156,6 +167,16 @@ extension HomeVC: UICollectionViewDelegateFlowLayout {
             
         case .shortsYoutubeVideos:
             return .init(width: view.frame.width, height: 320)
+            
+        case .communityPost:
+            var imageHeight = content.post?.imageHeight ?? 0
+            imageHeight += 35 // profileImageViewDimen
+            imageHeight += 10 // profileImageView top padding
+            imageHeight += 10 // captionLabel top padding
+            imageHeight += 5 // thumbnailImageView top padding
+            imageHeight += 12 // likeButton top padding
+            imageHeight += 80 // extra spacing to prevent content hugging
+            return .init(width: view.frame.width, height: imageHeight)
         }
         
     }

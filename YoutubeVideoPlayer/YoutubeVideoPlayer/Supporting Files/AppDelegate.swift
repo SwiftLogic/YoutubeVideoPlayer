@@ -100,3 +100,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 }
 
+
+//
+//{
+//    "profileImageUrl": "profileImageUrl",
+//    "channelName": "ESPN FC .",
+//    "creationDate": "19 minutes ago",
+//    "caption": "Arsenal held a moment of silence before the second half of their match vs. FC Zurich following the passing of Queen Elizabeth II.",
+//    "thumbnailImageUrl": "thumbnailImageUrl",
+//    "likeCount": "1.1K",
+//    "commentCount": "91",
+//    "type": 2
+//
+//}

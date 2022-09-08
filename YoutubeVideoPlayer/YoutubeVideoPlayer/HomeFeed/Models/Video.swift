@@ -8,6 +8,7 @@
 import UIKit
 struct Video: Decodable {
     
+    var post: YoutubeCommunityPost?
     var channel: Channel?
     var videoUrl: String?
     let videoThumbnailImageUrl: String?
@@ -69,8 +70,9 @@ struct Channel: Decodable {
 enum HomeFeedDataType: Int, Decodable {
     case normalYoutubeVideos
     case shortsYoutubeVideos
+    case communityPost
+
 //    case stories
-//    case communityPost
 }
 
 
@@ -79,29 +81,35 @@ struct YoutubeShort: Decodable {
 }
 
 
-//MARK: - FIND A WAY TO DETERMINE DATA TYPE IS YOUTUBE SHORTS WITHOUT HAVING TO INITIALIZE: channel:  videoThumbnailImageUrl: videoTitle:  videoDuration:  creationDate:
-
-
-struct ContentTableViewCellViewModel {
-    let image: UIImage?
-    let title: String?
-
-    enum CellContent {
-        case image(UIImage?)
-        case title(String)
-    }
-    
-    init(content: CellContent) {
-        switch content {
-        case let .image(image):
-            self.image = image
-            self.title = nil
-        case let .title(title):
-            self.title = title
-            self.image = nil
-        }
-    }
+struct YoutubeCommunityPost: Decodable {
+    let profileImageUrl, channelName, creationDate, caption, likeCount, commentCount: String
+    let thumbnailImageUrl: String?
+    let imageHeight: CGFloat?
 }
+
+
+
+
+//struct ContentTableViewCellViewModel {
+//    let image: UIImage?
+//    let title: String?
+//
+//    enum CellContent {
+//        case image(UIImage?)
+//        case title(String)
+//    }
+//
+//    init(content: CellContent) {
+//        switch content {
+//        case let .image(image):
+//            self.image = image
+//            self.title = nil
+//        case let .title(title):
+//            self.title = title
+//            self.image = nil
+//        }
+//    }
+//}
 
 
 
