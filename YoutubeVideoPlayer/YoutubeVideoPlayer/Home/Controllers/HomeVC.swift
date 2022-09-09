@@ -64,7 +64,7 @@ class HomeVC: UICollectionViewController {
     }
     
     
-    fileprivate var videosList : [Video] = []
+    fileprivate var feedContentList : [FeedContent] = []
     
     
     
@@ -104,8 +104,8 @@ extension HomeVC {
     fileprivate func parseVideos(from data: Data) {
         let decoder = JSONDecoder()
         do {
-            let videos = try decoder.decode([Video].self, from: data)
-            self.videosList = videos
+            let videos = try decoder.decode([FeedContent].self, from: data)
+            self.feedContentList = videos
             self.collectionView.reloadData()
         } catch let decoderError {
             print("failed to decode videoList Data: ", decoderError)
@@ -117,27 +117,26 @@ extension HomeVC {
 
 //MARK: - CollectionView Delegate & DataSource
 extension HomeVC: UICollectionViewDelegateFlowLayout {
-
     
-    fileprivate func setUpCells(with video: Video, indexPath: IndexPath) -> UICollectionViewCell {
+    fileprivate func setUpCells(with video: FeedContent, indexPath: IndexPath) -> UICollectionViewCell {
         
         switch video.type {
         
         case .normalYoutubeVideos:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeFeedCell.cellReuseIdentifier, for: indexPath) as! HomeFeedCell
-            let content = videosList[indexPath.item]
+            let content = feedContentList[indexPath.item]
             cell.configure(with: content)
             return cell
             
         case .shortsYoutubeVideos:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ShortsContainerViewCell.cellReuseIdentifier, for: indexPath) as! ShortsContainerViewCell
-            let content = videosList[indexPath.item]
+            let content = feedContentList[indexPath.item]
             cell.bind(shorts: content.shorts ?? [])
             return cell
             
         case .communityPost:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CommunityPostCell.cellReuseIdentifier, for: indexPath) as! CommunityPostCell
-            let content = videosList[indexPath.item]
+            let content = feedContentList[indexPath.item]
             let imageHeight = content.post?.imageHeight ?? 0
             cell.thumbnailHeightConstraint.constant = imageHeight
             cell.layoutIfNeeded()
@@ -154,12 +153,12 @@ extension HomeVC: UICollectionViewDelegateFlowLayout {
     
   
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        return setUpCells(with: videosList[indexPath.item], indexPath: indexPath)
+        return setUpCells(with: feedContentList[indexPath.item], indexPath: indexPath)
     }
     
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let content = videosList[indexPath.item]
+        let content = feedContentList[indexPath.item]
 
         switch content.type {
         case .normalYoutubeVideos:
@@ -188,12 +187,12 @@ extension HomeVC: UICollectionViewDelegateFlowLayout {
     
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return videosList.count
+        return feedContentList.count
     }
     
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let homeFeedData = videosList[indexPath.item]
+        let homeFeedData = feedContentList[indexPath.item]
         delegate?.handleOpenVideoPlayer(for: homeFeedData)
     }
     
@@ -212,26 +211,3 @@ extension HomeVC: StatusBarHiddenDelegate {
     }
 }
 
-//
-//
-//#if canImport(SwiftUI) && DEBUG
-//import SwiftUI
-//
-//let deviceNames: [String] = [
-//    "iPhone 11 Pro Max"
-//]
-//
-//@available(iOS 13.0, *)
-//struct ViewController_Preview: PreviewProvider {
-//    static var previews: some View {
-//        ForEach(deviceNames, id: \.self) { deviceName in
-//            UIViewControllerPreview {
-//                MainTabbarVC()
-//            }.previewDevice(PreviewDevice(rawValue: deviceName))
-//                .previewDisplayName(deviceName)
-//                .ignoresSafeArea()
-//        }
-//    }
-//}
-//#endif
-//

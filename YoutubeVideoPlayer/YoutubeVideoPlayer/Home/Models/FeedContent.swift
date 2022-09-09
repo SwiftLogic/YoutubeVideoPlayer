@@ -1,12 +1,12 @@
 //
-//  Video.swift
+//  FeedContent.swift
 //  YoutubeVideoPlayer
 //
 //  Created by Osaretin Uyigue on 7/27/22.
 //
 
 import UIKit
-struct Video: Decodable {
+struct FeedContent: Decodable {
     var stories: [UserStory]?
     var post: YoutubeCommunityPost?
     var channel: Channel?

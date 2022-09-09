@@ -122,7 +122,7 @@ class HomeFeedCell: UICollectionViewCell {
     
     
     // data binding
-    func configure(with video: Video) {
+    func configure(with video: FeedContent) {
         thumbnailImageView.getImage(for: video.thumbnailImageUrlUnwrapped)
         channelImageView.getImage(for: video.channelUnwrapped.channelImageUrl)
         videoTitleLabel.text = video.videoTitle

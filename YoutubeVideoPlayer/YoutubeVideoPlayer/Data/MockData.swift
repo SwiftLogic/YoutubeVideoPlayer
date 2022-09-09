@@ -9,7 +9,7 @@ import Foundation
 
 enum MockData {    
     static func videoListData() -> Data {
-        let fileName = "videosData"
+        let fileName = "mockFeedData"
         return readJSONData(fromFile: fileName)
     }
     

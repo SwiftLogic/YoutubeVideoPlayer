@@ -16,7 +16,7 @@ protocol StatusBarHiddenDelegate: AnyObject {
 
 //MARK: - HomeVCDelegate
 protocol HomeVCDelegate: AnyObject {
-    func handleOpenVideoPlayer(for homeFeedData: Video)
+    func handleOpenVideoPlayer(for homeFeedData: FeedContent)
 }
 
 
