@@ -26,6 +26,7 @@ class StoriesCollectionCell: UICollectionViewCell {
     
     //MARK: - Properties
     var stories = [UserStory]()
+    static let cellReuseIdentifier = String(describing: StoriesCollectionCell.self)
 
     fileprivate let topLineSeperator: UIView = {
         let view = UIView()

@@ -73,7 +73,7 @@ class HomeVC: UICollectionViewController {
         collectionView.register(HomeFeedCell.self, forCellWithReuseIdentifier: HomeFeedCell.cellReuseIdentifier)
         collectionView.register(ShortsContainerViewCell.self, forCellWithReuseIdentifier: ShortsContainerViewCell.cellReuseIdentifier)
         collectionView.register(CommunityPostCell.self, forCellWithReuseIdentifier: CommunityPostCell.cellReuseIdentifier)
-
+        collectionView.register(StoriesCollectionCell.self, forCellWithReuseIdentifier: StoriesCollectionCell.cellReuseIdentifier)
         collectionView.backgroundColor = UIColor.rgb(red: 55, green: 55, blue: 55)
 //        collectionView.contentInset = .init(top: 8, left: 0, bottom: 0, right: 0)
     }
@@ -144,6 +144,9 @@ extension HomeVC: UICollectionViewDelegateFlowLayout {
             cell.post = content.post
             return cell
             
+        case .stories:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: StoriesCollectionCell.cellReuseIdentifier, for: indexPath) as! StoriesCollectionCell
+            return cell
         }
         
     }
@@ -177,6 +180,8 @@ extension HomeVC: UICollectionViewDelegateFlowLayout {
             imageHeight += 12 // likeButton top padding
             imageHeight += 80 // extra spacing to prevent content hugging
             return .init(width: view.frame.width, height: imageHeight)
+        case .stories:
+            return .init(width: view.frame.width, height: 270)
         }
         
     }

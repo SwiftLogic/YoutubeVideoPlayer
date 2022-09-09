@@ -106,7 +106,7 @@ class PreviewStoryCell: UICollectionViewCell {
     
 }
 
-struct UserStory {
+struct UserStory: Decodable {
     
     let username: String
     let profileImageUrl: String

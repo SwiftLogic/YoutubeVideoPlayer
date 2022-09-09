@@ -7,7 +7,7 @@
 
 import UIKit
 struct Video: Decodable {
-    
+    var stories: [UserStory]?
     var post: YoutubeCommunityPost?
     var channel: Channel?
     var videoUrl: String?
@@ -71,8 +71,7 @@ enum HomeFeedDataType: Int, Decodable {
     case normalYoutubeVideos
     case shortsYoutubeVideos
     case communityPost
-
-//    case stories
+    case stories
 }
 
 
