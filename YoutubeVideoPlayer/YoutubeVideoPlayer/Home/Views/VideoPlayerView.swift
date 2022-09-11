@@ -7,7 +7,7 @@
 
 import UIKit
 import AVFoundation
-
+import MaterialComponents.MaterialActivityIndicator
 class VideoPlayerView: UIView {
     
     //MARK: - Init
