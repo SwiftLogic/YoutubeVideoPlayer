@@ -28,7 +28,6 @@ class HomeVC: UICollectionViewController {
         handleSetUpNavBar()
         setUpCollectionView()
         fetchVideos()
-        listenForExtractedURL()
     }
     
     
@@ -42,22 +41,9 @@ class HomeVC: UICollectionViewController {
     }
     
     fileprivate var subscriptions = Set<AnyCancellable>()
-    
-    
-    
     weak var delegate: HomeVCDelegate?
     
-    
-    
-    
     fileprivate var feedContentList : [FeedContent] = []
-    
-    fileprivate let urlExtractor: URLExtractor = {
-        let linkExtractor  = URLExtractor()
-        return linkExtractor
-    }()
-    
-    
     
     
     //MARK: - Methods
@@ -69,21 +55,6 @@ class HomeVC: UICollectionViewController {
         collectionView.backgroundColor = UIColor.rgb(red: 55, green: 55, blue: 55)
     }
     
-    
-    fileprivate var extractedURL: URL?
-    fileprivate func listenForExtractedURL() {
-        urlExtractor.publishExtractedURL
-            .receive(on: DispatchQueue.main)
-            .sink { subscription in
-                switch subscription {
-                    
-                case .finished:
-                    ()
-                }
-            } receiveValue: {[weak self] url in
-                self?.extractedURL = url
-            }.store(in: &subscriptions)
-    }
     
     
 }
@@ -205,14 +176,7 @@ extension HomeVC: UICollectionViewDelegateFlowLayout {
             
             let video = feedContentList[indexPath.item]
             
-            guard let url = URL(string: video.videoUrl ?? "") else {return}
-            urlExtractor.load(youtubeVideoLink: url)
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                guard let videoURL = self.extractedURL else {return}
-                self.delegate?.handleOpenVideoPlayer(for: videoURL, content: video)
-
-            }
+            delegate?.handleOpenVideoPlayer(for: video)
             
         case .shortsYoutubeVideos, .communityPost, .stories:
             ()

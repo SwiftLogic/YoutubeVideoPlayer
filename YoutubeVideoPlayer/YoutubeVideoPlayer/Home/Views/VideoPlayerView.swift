@@ -23,26 +23,15 @@ class VideoPlayerView: UIView {
     
     
     deinit {
-        tearDownVideoPlayer()
+        cleanUpPlayerForReuse()
     }
     
     //MARK: - Properties
     weak var delegate: VideoPlayerViewDelegate?
     fileprivate var timeObserverToken: Any?
     var videoPlayerMode: VideoPlayerMode = .expanded
-
-    fileprivate var videoURL: URL? {
-        didSet {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                self.setUpPlayer()
-            }
-        }
-    }
     
-    
-    
-    
-    fileprivate let thumbnailImageView: CacheableImageView = {
+    fileprivate(set) lazy var thumbnailImageView: CacheableImageView = {
         let view = CacheableImageView()
         view.clipsToBounds = true
         view.contentMode = .scaleAspectFill
@@ -165,6 +154,8 @@ class VideoPlayerView: UIView {
         let imageName = "pause.fill"
         let image = createSfImage(with: imageName)
         pausePlayButton.setImage(image, for: .normal)
+        elapsedTimeLabel.text = ""
+
 //        playbackSlider.setThumbImage( UIImage().withRenderingMode(.alwaysTemplate), for: .normal)
 
         [pausePlayButton, skipBackwardButton, skipForwardButton, elapsedTimeLabel, fullScreenModeBtn, minimizeVideoPlayerBtn].forEach { view in
@@ -190,11 +181,12 @@ class VideoPlayerView: UIView {
     }
     
     
-    func configure(with imageUrl: String, videoUrl: URL) {
-        thumbnailImageView.getImage(for: imageUrl)
-        videoURL = videoUrl//AppConstant.mockVideoUrlStrings.randomElement() ?? ""
-    }
     
+    func initializePlayer(for url: URL) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            self.setUpPlayer(with: url)
+        }
+    }
     
     
     func isHidden(_ hide: Bool) {
@@ -215,9 +207,11 @@ class VideoPlayerView: UIView {
 //MARK: - Video Player Setup & TearDown
 extension VideoPlayerView {
     
-    fileprivate func setUpPlayer() {
-        tearDownVideoPlayer()
-        guard let url = videoURL else {return}
+    
+    
+    
+    fileprivate func setUpPlayer(with url: URL) {
+        cleanUpPlayerForReuse()
         let player = AVPlayer(url: url)
         let playerLayer = AVPlayerLayer(player: player)
         playerLayer.frame = self.frame
@@ -281,7 +275,7 @@ extension VideoPlayerView {
     }
     
     
-    func tearDownVideoPlayer() {
+    func cleanUpPlayerForReuse() {
        prepareViewForReuse()
        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player?.currentItem)
         if let timeObserverToken = timeObserverToken {

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Combine
 enum VideoPlayerMode: Int {
     case expanded, minimized
 }
@@ -18,6 +19,7 @@ class MainTabbarVC: UITabBarController {
         setUpViews()
         setUpGestureRecognizers()
         setUpTabBarAppearance()
+        listenForExtractedURL()
     }
     
     
@@ -133,6 +135,12 @@ class MainTabbarVC: UITabBarController {
         return slider
     }()
     
+    
+    fileprivate let urlExtractor: URLExtractor = {
+        let linkExtractor  = URLExtractor()
+        return linkExtractor
+    }()
+    
     //MARK: - Methods
     fileprivate func setUpTabBarAppearance() {
         let tabBarAppearance = UITabBarAppearance()
@@ -239,20 +247,53 @@ class MainTabbarVC: UITabBarController {
         
     }
     
+    
+    
+    fileprivate var extractedURL: URL?
+    fileprivate var subscriptions = Set<AnyCancellable>()
+
+    fileprivate func listenForExtractedURL() {
+        urlExtractor.publishExtractedURL
+            .receive(on: DispatchQueue.main)
+            .sink { subscription in
+                switch subscription {
+                    
+                case .finished:
+                    ()
+                }
+            } receiveValue: {[weak self] url in
+                self?.extractedURL = url
+            }.store(in: &subscriptions)
+    }
+    
 }
 
 
 //MARK: - HomeVCDelegate
 extension MainTabbarVC: HomeVCDelegate {
-    func handleOpenVideoPlayer(for url: URL, content: FeedContent) {
-        // data binding
+    
+    func handleOpenVideoPlayer(for content: FeedContent) {
+        
         miniPlayerControlView.configure(with: content)
+        
+        // setup video thumbnail
         let imageUrl = content.thumbnailImageUrlUnwrapped
-        videoPlayerView.configure(with: imageUrl, videoUrl: url)
+        videoPlayerView.cleanUpPlayerForReuse()
+        videoPlayerView.thumbnailImageView.getImage(for: imageUrl)
+
+        // load url extractor
+        guard let url = URL(string: content.videoUrl ?? "") else {return}
+        urlExtractor.load(youtubeVideoLink: url)
+        
+        // wait for extractor to extract streammable url and pass it to video player
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+            guard let videoURL = self.extractedURL else {return}
+            self.videoPlayerView.initializePlayer(for: videoURL)
+        }
+        
+        
         expandVideoPlayer()
     }
-    
-    
     
 }
 
@@ -419,7 +460,7 @@ extension MainTabbarVC: MiniPlayerControlViewDelegate {
     
     
     func handleDismissVideoPlayer() {
-        videoPlayerView.tearDownVideoPlayer()
+        videoPlayerView.cleanUpPlayerForReuse()
         videoPlayerContainerViewTopAnchor.constant = view.frame.height
         playbackSlider.isHidden = true
         playbackSlider.value = 0
@@ -459,24 +500,24 @@ extension MainTabbarVC: VideoPlayerViewDelegate {
 }
 
 
-
-#if canImport(SwiftUI) && DEBUG
-import SwiftUI
-
-let deviceNames: [String] = [
-    "iPhone 11 Pro Max"
-]
-
-@available(iOS 13.0, *)
-struct ViewController_Preview: PreviewProvider {
-    static var previews: some View {
-        ForEach(deviceNames, id: \.self) { deviceName in
-            UIViewControllerPreview {
-                MainTabbarVC()
-            }.previewDevice(PreviewDevice(rawValue: deviceName))
-                .previewDisplayName(deviceName)
-                .ignoresSafeArea()
-        }
-    }
-}
-#endif
+//
+//#if canImport(SwiftUI) && DEBUG
+//import SwiftUI
+//
+//let deviceNames: [String] = [
+//    "iPhone 11 Pro Max"
+//]
+//
+//@available(iOS 13.0, *)
+//struct ViewController_Preview: PreviewProvider {
+//    static var previews: some View {
+//        ForEach(deviceNames, id: \.self) { deviceName in
+//            UIViewControllerPreview {
+//                MainTabbarVC()
+//            }.previewDevice(PreviewDevice(rawValue: deviceName))
+//                .previewDisplayName(deviceName)
+//                .ignoresSafeArea()
+//        }
+//    }
+//}
+//#endif
