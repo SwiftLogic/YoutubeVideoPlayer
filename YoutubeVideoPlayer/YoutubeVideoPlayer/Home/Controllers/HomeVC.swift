@@ -7,6 +7,7 @@
 
 import UIKit
 import Combine
+import AVKit
 class HomeVC: UICollectionViewController {
     
     //MARK: - Init
@@ -64,9 +65,21 @@ class HomeVC: UICollectionViewController {
     }
     
     
-    fileprivate var feedContentList : [FeedContent] = []
+    fileprivate var feedContentList : [FeedContent] = [] {
+        didSet {
+            guard let url = URL(string: feedContentList.first!.videoUrl ?? "") else {return}
+            videoDowloader.loadUrl(from: url)
+        }
+    }
+    
+     var videoDowloader: VideoDownloader = {
+        let videoDownloader = VideoDownloader()
+        return videoDownloader
+    }()
     
     
+    var videoDowloaderAnyCancellable: AnyCancellable?
+
     
     //MARK: - Methods
     fileprivate func setUpCollectionView() {
@@ -75,7 +88,30 @@ class HomeVC: UICollectionViewController {
         collectionView.register(CommunityPostCell.self, forCellWithReuseIdentifier: CommunityPostCell.cellReuseIdentifier)
         collectionView.register(StoriesCollectionCell.self, forCellWithReuseIdentifier: StoriesCollectionCell.cellReuseIdentifier)
         collectionView.backgroundColor = UIColor.rgb(red: 55, green: 55, blue: 55)
-//        collectionView.contentInset = .init(top: 8, left: 0, bottom: 0, right: 0)
+        
+        
+        videoDowloaderAnyCancellable = videoDowloader.extractedURLPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { subscription in
+            switch subscription {
+                
+            case .finished:
+                print("finished")
+            }
+        } receiveValue: { url in
+            print("url: ", url)
+            
+            
+            let player = AVPlayer(url: url)
+            let vc = AVPlayerViewController()
+            vc.player = player
+            
+            self.present(vc, animated: true) {
+                vc.player?.play()
+            }
+            
+        }
+
     }
 
 
