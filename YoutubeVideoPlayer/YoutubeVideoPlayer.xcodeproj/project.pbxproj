@@ -33,7 +33,7 @@
 		E9C29FC828CA86090003BBA3 /* PreviewStoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9C29FC728CA86090003BBA3 /* PreviewStoryCell.swift */; };
 		E9C4A01628C7AED400466CDD /* MockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9C4A01528C7AED400466CDD /* MockData.swift */; };
 		E9C4A01828C7AFD500466CDD /* NetworkingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9C4A01728C7AFD500466CDD /* NetworkingService.swift */; };
-		E9F0CF1528CE442A0047E93B /* VideoDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9F0CF1428CE442A0047E93B /* VideoDownloader.swift */; };
+		E9F0CF1528CE442A0047E93B /* URLExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9F0CF1428CE442A0047E93B /* URLExtractor.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -65,7 +65,7 @@
 		E9C29FC728CA86090003BBA3 /* PreviewStoryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewStoryCell.swift; sourceTree = "<group>"; };
 		E9C4A01528C7AED400466CDD /* MockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockData.swift; sourceTree = "<group>"; };
 		E9C4A01728C7AFD500466CDD /* NetworkingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkingService.swift; sourceTree = "<group>"; };
-		E9F0CF1428CE442A0047E93B /* VideoDownloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoDownloader.swift; sourceTree = "<group>"; };
+		E9F0CF1428CE442A0047E93B /* URLExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLExtractor.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -213,7 +213,7 @@
 			children = (
 				E9AE20C72891C9BE00B87B23 /* PaddedlUILabel.swift */,
 				E914D1DE28C822020046E62E /* CacheableImageView.swift */,
-				E9F0CF1428CE442A0047E93B /* VideoDownloader.swift */,
+				E9F0CF1428CE442A0047E93B /* URLExtractor.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -295,7 +295,7 @@
 				E9AE20AC2891A98A00B87B23 /* HomeVC.swift in Sources */,
 				E9995F5B289EAFD200221973 /* MiniPlayerControlView.swift in Sources */,
 				E9C29FC628CA854E0003BBA3 /* StoriesCollectionCell.swift in Sources */,
-				E9F0CF1528CE442A0047E93B /* VideoDownloader.swift in Sources */,
+				E9F0CF1528CE442A0047E93B /* URLExtractor.swift in Sources */,
 				E9C29FC828CA86090003BBA3 /* PreviewStoryCell.swift in Sources */,
 				E9AA89A128C93D0A00C3B2CD /* ViewPreviewer.swift in Sources */,
 				E9AE20C52891C95100B87B23 /* HomeFeedCell.swift in Sources */,

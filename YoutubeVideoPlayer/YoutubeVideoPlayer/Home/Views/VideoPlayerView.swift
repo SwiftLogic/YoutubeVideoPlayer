@@ -31,13 +31,11 @@ class VideoPlayerView: UIView {
     fileprivate var timeObserverToken: Any?
     var videoPlayerMode: VideoPlayerMode = .expanded
 
-    
-    fileprivate var videoURL: String? {
+    fileprivate var videoURL: URL? {
         didSet {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.setUpPlayer()
             }
-            
         }
     }
     
@@ -192,9 +190,9 @@ class VideoPlayerView: UIView {
     }
     
     
-    func configure(with imageUrl: String, videoUrlString: String) {
+    func configure(with imageUrl: String, videoUrl: URL) {
         thumbnailImageView.getImage(for: imageUrl)
-        videoURL = AppConstant.mockVideoUrlStrings.randomElement() ?? ""//videoUrlString
+        videoURL = videoUrl//AppConstant.mockVideoUrlStrings.randomElement() ?? ""
     }
     
     
@@ -219,10 +217,7 @@ extension VideoPlayerView {
     
     fileprivate func setUpPlayer() {
         tearDownVideoPlayer()
-        
-        guard let videoUrlUnwrapped = videoURL,
-              let url = URL(string: videoUrlUnwrapped) else {return}
-        
+        guard let url = videoURL else {return}
         let player = AVPlayer(url: url)
         let playerLayer = AVPlayerLayer(player: player)
         playerLayer.frame = self.frame
@@ -232,9 +227,6 @@ extension VideoPlayerView {
         thumbnailImageView.layer.addSublayer(playerLayer)
         self.player?.play()
         delegate?.videoPlayStatusChanged(isPlaying: true)
-        
-//        player.addObserver(self, forKeyPath: "currentItem.loadedTimeRanges", options: .new, context: nil)
-
         setUpPeriodicTimeObserver()
        
         //alerts that video completed playing

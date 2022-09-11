@@ -5,7 +5,7 @@
 //  Created by Osaretin Uyigue on 8/6/22.
 //
 
-import Foundation
+import UIKit
 
 //MARK: - StatusBarHiddenDelegate
 protocol StatusBarHiddenDelegate: AnyObject {
@@ -16,7 +16,7 @@ protocol StatusBarHiddenDelegate: AnyObject {
 
 //MARK: - HomeVCDelegate
 protocol HomeVCDelegate: AnyObject {
-    func handleOpenVideoPlayer(for homeFeedData: FeedContent)
+    func handleOpenVideoPlayer(for url: URL, content: FeedContent)
 }
 
 

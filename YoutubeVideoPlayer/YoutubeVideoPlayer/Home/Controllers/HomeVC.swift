@@ -28,18 +28,11 @@ class HomeVC: UICollectionViewController {
         handleSetUpNavBar()
         setUpCollectionView()
         fetchVideos()
+        listenForExtractedURL()
     }
     
     
     //MARK: - Properties
-    fileprivate var anyCancellable: AnyCancellable?
-
-    enum VideoPlayerMode: Int {
-        case expanded, minimized
-    }
-    
-    weak var delegate: HomeVCDelegate?
-    
     var isStatusBarHidden: Bool = false {
         didSet {
             if oldValue != self.isStatusBarHidden {
@@ -47,39 +40,25 @@ class HomeVC: UICollectionViewController {
             }
         }
     }
-
-    override var prefersStatusBarHidden: Bool {
-        return self.isStatusBarHidden
-    }
     
-    override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
-        get {
-            return .slide
-        }
-    }
-
-
-    
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
+    fileprivate var subscriptions = Set<AnyCancellable>()
     
     
-    fileprivate var feedContentList : [FeedContent] = [] {
-        didSet {
-            guard let url = URL(string: feedContentList.first!.videoUrl ?? "") else {return}
-            videoDowloader.loadUrl(from: url)
-        }
-    }
     
-     var videoDowloader: VideoDownloader = {
-        let videoDownloader = VideoDownloader()
-        return videoDownloader
+    weak var delegate: HomeVCDelegate?
+    
+    
+    
+    
+    fileprivate var feedContentList : [FeedContent] = []
+    
+    fileprivate let urlExtractor: URLExtractor = {
+        let linkExtractor  = URLExtractor()
+        return linkExtractor
     }()
     
     
-    var videoDowloaderAnyCancellable: AnyCancellable?
-
+    
     
     //MARK: - Methods
     fileprivate func setUpCollectionView() {
@@ -88,33 +67,25 @@ class HomeVC: UICollectionViewController {
         collectionView.register(CommunityPostCell.self, forCellWithReuseIdentifier: CommunityPostCell.cellReuseIdentifier)
         collectionView.register(StoriesCollectionCell.self, forCellWithReuseIdentifier: StoriesCollectionCell.cellReuseIdentifier)
         collectionView.backgroundColor = UIColor.rgb(red: 55, green: 55, blue: 55)
-        
-        
-        videoDowloaderAnyCancellable = videoDowloader.extractedURLPublisher
+    }
+    
+    
+    fileprivate var extractedURL: URL?
+    fileprivate func listenForExtractedURL() {
+        urlExtractor.publishExtractedURL
             .receive(on: DispatchQueue.main)
             .sink { subscription in
-            switch subscription {
-                
-            case .finished:
-                print("finished")
-            }
-        } receiveValue: { url in
-            print("url: ", url)
-            
-            
-            let player = AVPlayer(url: url)
-            let vc = AVPlayerViewController()
-            vc.player = player
-            
-            self.present(vc, animated: true) {
-                vc.player?.play()
-            }
-            
-        }
-
+                switch subscription {
+                    
+                case .finished:
+                    ()
+                }
+            } receiveValue: {[weak self] url in
+                self?.extractedURL = url
+            }.store(in: &subscriptions)
     }
-
-
+    
+    
 }
 
 
@@ -123,7 +94,7 @@ class HomeVC: UICollectionViewController {
 extension HomeVC {
     
     fileprivate func fetchVideos() {
-        anyCancellable = NetworkingService.fetchVideos()
+        NetworkingService.fetchVideos()
             .receive(on: DispatchQueue.main)
             .sink { completion in
                 switch completion {
@@ -133,7 +104,7 @@ extension HomeVC {
                 }
             } receiveValue: { [weak self]data in
                 self?.parseVideos(from: data)
-            }
+            }.store(in: &subscriptions)
     }
     
     
@@ -157,7 +128,7 @@ extension HomeVC: UICollectionViewDelegateFlowLayout {
     fileprivate func setUpCells(with video: FeedContent, indexPath: IndexPath) -> UICollectionViewCell {
         
         switch video.type {
-        
+            
         case .normalYoutubeVideos:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeFeedCell.cellReuseIdentifier, for: indexPath) as! HomeFeedCell
             let content = feedContentList[indexPath.item]
@@ -187,7 +158,7 @@ extension HomeVC: UICollectionViewDelegateFlowLayout {
     }
     
     
-  
+    
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         return setUpCells(with: feedContentList[indexPath.item], indexPath: indexPath)
     }
@@ -195,7 +166,7 @@ extension HomeVC: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let content = feedContentList[indexPath.item]
-
+        
         switch content.type {
         case .normalYoutubeVideos:
             var newHeight = AppConstant.thumbnailImageHeight
@@ -228,8 +199,24 @@ extension HomeVC: UICollectionViewDelegateFlowLayout {
     
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let homeFeedData = feedContentList[indexPath.item]
-        delegate?.handleOpenVideoPlayer(for: homeFeedData)
+        let content = feedContentList[indexPath.item]
+        switch content.type {
+        case .normalYoutubeVideos:
+            
+            let video = feedContentList[indexPath.item]
+            
+            guard let url = URL(string: video.videoUrl ?? "") else {return}
+            urlExtractor.load(youtubeVideoLink: url)
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                guard let videoURL = self.extractedURL else {return}
+                self.delegate?.handleOpenVideoPlayer(for: videoURL, content: video)
+
+            }
+            
+        case .shortsYoutubeVideos, .communityPost, .stories:
+            ()
+        }
     }
     
     
@@ -247,3 +234,23 @@ extension HomeVC: StatusBarHiddenDelegate {
     }
 }
 
+
+
+//MARK: Overriden Properties
+extension HomeVC {
+    
+    
+    override var prefersStatusBarHidden: Bool {
+        return self.isStatusBarHidden
+    }
+    
+    override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
+        get {
+            return .slide
+        }
+    }
+        
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
+}

@@ -13,6 +13,10 @@ enum AppConstant {
     
     static let profileImageUrl = "https://yt3.ggpht.com/ytc/AMLnZu_5QhSDxdZbuTEiDSTO4oY8l8Q2-fvc0aRh6fcFRA=s88-c-k-c0x00ffffff-no-rj"
     
+    static let javascriptYoutubeUrlEvaluator = "document.getElementsByTagName('video')[0].src" //MARK: This runs an injection into javascript of the baseURL and returns the actual url pointing to the video so we can download or stream it
+    
+    static let mozartVideoLink = "https://youtu.be/iUohO2MSot8"
+    
     static let mockVideoUrlStrings = [
         "https://player.vimeo.com/external/587646755.hd.mp4?s=c6f18daeca03bfd4f07ee7ffd702dfd88254a6ff&profile_id=174",
     
