@@ -1,9 +1,15 @@
 # YoutubeVideoPlayer
 
-A Toy Project to demonstrate a programmatic UIKit way to build the Youtube iOS app video player gesture animation.
+<img src="https://raw.githubusercontent.com/SvenTiigi/YouTubePlayerKit/gh-pages/readme-assets/logo.png" width="30%">
 
 
-Core Focus: NSLayConstraint Animations & Pan Gesture Animations
+**YoutubeVideoPlayer** is a recreation of the youtube ios application. Using programmatic UIKit, combine, avkit, avfoundation and webkit.
+
+This is a toy Project, with the core focus on the Youtube Player Pan Gesture Animations from max to minimzed player.
+
+![](https://github.com/samisays11/YoutubeVideoPlayer/blob/master/Gif-Demo/youtubeVideoPlayerScreenShots.png)
+
+
 
 Demo:
 
