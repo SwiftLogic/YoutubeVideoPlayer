@@ -280,6 +280,7 @@ extension MainTabbarVC: HomeVCDelegate {
         let imageUrl = content.thumbnailImageUrlUnwrapped
         videoPlayerView.cleanUpPlayerForReuse()
         videoPlayerView.thumbnailImageView.getImage(for: imageUrl)
+        videoPlayerView.activityIndicator.startAnimating()
 
         // load url extractor
         guard let url = URL(string: content.videoUrl ?? "") else {return}

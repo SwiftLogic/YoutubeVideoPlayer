@@ -30,6 +30,8 @@ class VideoPlayerView: UIView {
     weak var delegate: VideoPlayerViewDelegate?
     fileprivate var timeObserverToken: Any?
     var videoPlayerMode: VideoPlayerMode = .expanded
+    fileprivate var isScrubAble = false
+    
     
     fileprivate(set) lazy var thumbnailImageView: CacheableImageView = {
         let view = CacheableImageView()
@@ -88,6 +90,8 @@ class VideoPlayerView: UIView {
     fileprivate lazy var fullScreenModeBtn = createButton(with: "arrow.up.left.and.arrow.down.right", imageSize: 15, backgroundColor: .clear, targetSelector: #selector(didTapFullScreenModeButton))
 
     
+    fileprivate(set) lazy var activityIndicator = MDCActivityIndicator()
+
     
     //MARK: - Methods
     fileprivate func setUpViews() {
@@ -101,6 +105,10 @@ class VideoPlayerView: UIView {
         elapsedTimeLabel.constrainToLeft(paddingLeft: 15)
         elapsedTimeLabel.constrainToBottom(paddingBottom: -15)
         setUpPlayBackControls()
+        
+        activityIndicator.sizeToFit()
+        insertSubview(activityIndicator, belowSubview: pausePlayButton)
+        activityIndicator.centerInSuperview()
     }
     
     
@@ -155,7 +163,7 @@ class VideoPlayerView: UIView {
         let image = createSfImage(with: imageName)
         pausePlayButton.setImage(image, for: .normal)
         elapsedTimeLabel.text = ""
-
+        activityIndicator.stopAnimating()
 //        playbackSlider.setThumbImage( UIImage().withRenderingMode(.alwaysTemplate), for: .normal)
 
         [pausePlayButton, skipBackwardButton, skipForwardButton, elapsedTimeLabel, fullScreenModeBtn, minimizeVideoPlayerBtn].forEach { view in
@@ -207,9 +215,6 @@ class VideoPlayerView: UIView {
 //MARK: - Video Player Setup & TearDown
 extension VideoPlayerView {
     
-    
-    
-    
     fileprivate func setUpPlayer(with url: URL) {
         cleanUpPlayerForReuse()
         let player = AVPlayer(url: url)
@@ -222,7 +227,9 @@ extension VideoPlayerView {
         self.player?.play()
         delegate?.videoPlayStatusChanged(isPlaying: true)
         setUpPeriodicTimeObserver()
-       
+        activityIndicator.stopAnimating()
+        
+        player.addObserver(self, forKeyPath: "currentItem.loadedTimeRanges", options: .new, context: nil)
         //alerts that video completed playing
         NotificationCenter.default.addObserver(self, selector: #selector(playerDidPlayToEndTime(notification:)),
                                                name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player.currentItem)
@@ -285,9 +292,19 @@ extension VideoPlayerView {
             player = nil
             playerLayer = nil
             playbackSlider.value = 0
+            isScrubAble = false
         }
     }
     
+    
+    
+    //MARK: - Player Observer
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        //This is when the player is ready and rendering frames
+        if keyPath == "currentItem.loadedTimeRanges" {
+            isScrubAble = true
+        }
+    }
     
 }
 
@@ -297,7 +314,7 @@ extension VideoPlayerView {
 extension VideoPlayerView {
     
     @objc fileprivate func handleSliderDragged( sender: UISlider) {
-        guard let duration = player?.currentItem?.duration else { return }
+        guard let duration = player?.currentItem?.duration, isScrubAble else { return }
         let value = Float64(playbackSlider.value) * CMTimeGetSeconds(duration)
         let seekTime = CMTime(value: CMTimeValue(value), timescale: 1)
         player?.seek(to: seekTime)
@@ -308,6 +325,7 @@ extension VideoPlayerView {
     @objc fileprivate func handleTapGestureAction() {
         switch videoPlayerMode {
         case .expanded:
+            guard isScrubAble else {return}
             handleToggleControls()
         case .minimized:
             delegate?.handleMaximizeVideoPlayer()
@@ -318,17 +336,9 @@ extension VideoPlayerView {
     
     fileprivate func handleToggleControls() {
         [pausePlayButton, skipBackwardButton, skipForwardButton, elapsedTimeLabel, fullScreenModeBtn, minimizeVideoPlayerBtn].forEach { view in
-            UIView.animate(withDuration: 0.4, delay: 0) {[weak view, weak self] in
+            UIView.animate(withDuration: 0.4, delay: 0) {[weak view] in
                 guard let view = view else {return}
-                
-//                if view.alpha == 0 {
-//                    self?.playbackSlider.setThumbImage(#imageLiteral(resourceName: "thumb").withRenderingMode(.alwaysOriginal), for: .normal)
-//                } else {
-//                    self?.playbackSlider.setThumbImage( UIImage().withRenderingMode(.alwaysTemplate), for: .normal)
-//                }
-                
                 view.alpha = view.alpha == 0 ? 1 : 0
-                
             }
         }
     }
@@ -351,7 +361,7 @@ extension VideoPlayerView {
     
     
     @objc fileprivate func didTapSkipBackwardsButton() {
-        guard let currentTime = player?.currentTime() else { return }
+        guard let currentTime = player?.currentTime(), isScrubAble else { return }
         let currentTimeInSecondsMinus10 =  CMTimeGetSeconds(currentTime).advanced(by: -5)
         let seekTime = CMTime(value: CMTimeValue(currentTimeInSecondsMinus10), timescale: 1)
         player?.seek(to: seekTime)
@@ -359,7 +369,7 @@ extension VideoPlayerView {
     
     
     @objc fileprivate func didTapSkipForwardsButton() {
-        guard let currentTime = player?.currentTime() else { return }
+        guard let currentTime = player?.currentTime(), isScrubAble else { return }
         let currentTimeInSecondsPlus10 =  CMTimeGetSeconds(currentTime).advanced(by: 5)
         let seekTime = CMTime(value: CMTimeValue(currentTimeInSecondsPlus10), timescale: 1)
         player?.seek(to: seekTime)
