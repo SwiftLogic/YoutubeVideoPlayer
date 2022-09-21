@@ -18,7 +18,6 @@ extension Int {
     static let playlists = 2
 }
 
-fileprivate let recentVideosCellReuseIdentifier = "recentVideosCellReuseIdentifier"
 fileprivate let actionButtonsCellReuseIdentifier = "actionButtonsCellReuseIdentifier"
 fileprivate let playlistCellReuseIdentifier = "playlistCellReuseIdentifier"
 
@@ -57,7 +56,7 @@ class LibraryViewController: UICollectionViewController, UICollectionViewDelegat
     
     //MARK: - Handlers
     fileprivate func setUpCollectionView() {
-        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: recentVideosCellReuseIdentifier)
+        collectionView.register(RecentlyViewedVideosContainerCell.self, forCellWithReuseIdentifier: RecentlyViewedVideosContainerCell.cellReuseIdentifier)
         collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: actionButtonsCellReuseIdentifier)
         collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: playlistCellReuseIdentifier)
         collectionView.register(UICollectionViewCell.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: playlistHeaderReuseIdentifier)
@@ -73,8 +72,7 @@ class LibraryViewController: UICollectionViewController, UICollectionViewDelegat
         switch librarySections[indexPath.section] {
             
         case .recentlyWatchedVideos:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: recentVideosCellReuseIdentifier, for: indexPath)
-            cell.backgroundColor = .red
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecentlyViewedVideosContainerCell.cellReuseIdentifier, for: indexPath) as! RecentlyViewedVideosContainerCell
             return cell
             
         case .actionButtons:
