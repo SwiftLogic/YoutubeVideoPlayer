@@ -144,7 +144,7 @@ extension UIViewController {
 
 
         let broadcastitem = UIBarButtonItem(image: BROADCAST_IMAGE, style: .done, target: self, action: nil)
-        let notificationitem = UIBarButtonItem(image: NOTIFICATION_IMAGE, style: .done, target: self, action: nil)
+        let notificationitem = UIBarButtonItem(image: NOTIFICATION_IMAGE, style: .done, target: self, action: #selector(didTapShowNotification))
         let searchItem = UIBarButtonItem(image: SEARCH_IMAGE, style: .done, target: self, action: nil)
 
 
@@ -160,4 +160,9 @@ extension UIViewController {
 
     }
 
+    
+    @objc fileprivate func didTapShowNotification() {
+        let notificationVC = NotificationsVC()
+        navigationController?.pushViewController(notificationVC, animated: true)
+    }
 }
