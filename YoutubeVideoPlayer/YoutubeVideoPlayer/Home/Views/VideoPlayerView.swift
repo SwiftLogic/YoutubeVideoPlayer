@@ -30,6 +30,13 @@ class VideoPlayerView: UIView {
     weak var delegate: VideoPlayerViewDelegate?
     fileprivate var timeObserverToken: Any?
     var videoPlayerMode: VideoPlayerMode = .expanded
+//    {
+//        didSet {
+//            //MARK: - Potential solution to issue #1
+//            playerLayer?.frame = frame
+//
+//        }
+//    }
     fileprivate var isScrubAble = false
     
     

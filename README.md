@@ -17,5 +17,5 @@ Old Demo, updated demo coming soon:
 
 
 
-![](https://github.com/samisays11/YoutubeVideoPlayer/blob/master/Gif-Demo/YoutubeVideoPlayerDemo1.gif)
+![](https://github.com/samisays11/YoutubeVideoPlayer/blob/master/Gif-Demo/youtubefeedDemo1.gif)
 
