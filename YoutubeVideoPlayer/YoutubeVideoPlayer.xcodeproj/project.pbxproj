@@ -36,6 +36,8 @@
 		E9C4A01828C7AFD500466CDD /* NetworkingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9C4A01728C7AFD500466CDD /* NetworkingService.swift */; };
 		E9F0CF1528CE442A0047E93B /* URLExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9F0CF1428CE442A0047E93B /* URLExtractor.swift */; };
 		E9F6EEB428DB53A6001F7FEF /* NotificationVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9F6EEB328DB53A6001F7FEF /* NotificationVC.swift */; };
+		E9F6EEB928DB588D001F7FEF /* UserNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9F6EEB828DB588D001F7FEF /* UserNotifications.swift */; };
+		E9F6EEBB28DB58D5001F7FEF /* NotificationsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9F6EEBA28DB58D5001F7FEF /* NotificationsCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -72,6 +74,8 @@
 		E9C4A01728C7AFD500466CDD /* NetworkingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkingService.swift; sourceTree = "<group>"; };
 		E9F0CF1428CE442A0047E93B /* URLExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLExtractor.swift; sourceTree = "<group>"; };
 		E9F6EEB328DB53A6001F7FEF /* NotificationVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationVC.swift; sourceTree = "<group>"; };
+		E9F6EEB828DB588D001F7FEF /* UserNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserNotifications.swift; sourceTree = "<group>"; };
+		E9F6EEBA28DB58D5001F7FEF /* NotificationsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -248,9 +252,35 @@
 		E9F6EEB228DB535B001F7FEF /* Notifications */ = {
 			isa = PBXGroup;
 			children = (
-				E9F6EEB328DB53A6001F7FEF /* NotificationVC.swift */,
+				E9F6EEB728DB5876001F7FEF /* Model */,
+				E9F6EEB628DB5871001F7FEF /* Views */,
+				E9F6EEB528DB5868001F7FEF /* Controller */,
 			);
 			path = Notifications;
+			sourceTree = "<group>";
+		};
+		E9F6EEB528DB5868001F7FEF /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				E9F6EEB328DB53A6001F7FEF /* NotificationVC.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		E9F6EEB628DB5871001F7FEF /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				E9F6EEBA28DB58D5001F7FEF /* NotificationsCell.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		E9F6EEB728DB5876001F7FEF /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				E9F6EEB828DB588D001F7FEF /* UserNotifications.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -391,7 +421,9 @@
 				E9C4A01628C7AED400466CDD /* MockData.swift in Sources */,
 				E914D1DF28C822020046E62E /* CacheableImageView.swift in Sources */,
 				E9AE20CC2891CC2000B87B23 /* PreviewShortsCell.swift in Sources */,
+				E9F6EEB928DB588D001F7FEF /* UserNotifications.swift in Sources */,
 				E9C4A01828C7AFD500466CDD /* NetworkingService.swift in Sources */,
+				E9F6EEBB28DB58D5001F7FEF /* NotificationsCell.swift in Sources */,
 				E9995F5D289EB69500221973 /* VideoPlayerView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
