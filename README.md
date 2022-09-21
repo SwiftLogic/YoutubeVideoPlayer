@@ -7,15 +7,18 @@
 
 This is a toy Project, with the core focus on the Youtube Player Pan Gesture Animations from max to minimzed player.
 
-**Actual ScreenShot of the app at the moment**
+**ScreenShots:**
 
 ![](https://github.com/samisays11/YoutubeVideoPlayer/blob/master/Gif-Demo/youtubeVideoPlayerScreenShots.png)
 
 
 
-Old Demo, updated demo coming soon:
-
+**Demo:**
 
 
 ![](https://github.com/samisays11/YoutubeVideoPlayer/blob/master/Gif-Demo/youtubefeedDemo1.gif)
+
+**More Demo**
+
+![](https://github.com/samisays11/YoutubeVideoPlayer/blob/master/Gif-Demo/youtubefeedDemo2.gif)
 
