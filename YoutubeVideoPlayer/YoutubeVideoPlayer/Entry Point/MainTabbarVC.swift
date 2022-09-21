@@ -74,7 +74,7 @@ class MainTabbarVC: UITabBarController {
     
     lazy var subsController = handleCreateTab(with: UIViewController(), title: "Subscriptions", selectedImage: SUBSCRIPTION_SELECTED_IMAGE, image: SUBSCRIPTION_UNSELECTED_IMAGE)
     
-    lazy var libraryController = handleCreateTab(with: UIViewController(), title: "Library", selectedImage: LIBRARY_SELECTED_IMAGE, image: LIBRARY_UNSELECTED_IMAGE)
+    lazy var libraryController = handleCreateTab(with: LibraryViewController(collectionViewLayout: UICollectionViewFlowLayout()), title: "Library", selectedImage: LIBRARY_SELECTED_IMAGE, image: LIBRARY_UNSELECTED_IMAGE)
     
     
     
